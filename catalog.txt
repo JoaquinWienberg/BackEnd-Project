@@ -1,0 +1,1 @@
+[{"title":"Placa de video","price":70000,"thumbnail":"https://images.app.goo.gl/1dfVVW88UfC4GtMCA","id":1},{"title":"Disco rigido","price":10000,"thumbnail":"https://images.app.goo.gl/GLNAEBxnoxHWUkvV7","id":2},{"title":"Gabinete","price":23000,"thumbnail":"https://images.app.goo.gl/dCyhix8ebXNodSGq8","id":3}]
