@@ -9,7 +9,7 @@ const Contenedor = require("./products")
 const routerProducts = new Router();
 
 
-//routerProducts.use(express.static('public'))
+
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
 
