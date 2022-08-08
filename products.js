@@ -72,6 +72,22 @@ class contenedor {
         console.log("Error en ejecutar la eliminación por Id")
       }
     }
+
+    // Actualizar información de un producto
+
+    async updateById(idNumber, title, price, thumbnail) {
+      const items = await this.getAll()
+      const itemPosition = idNumber - 1
+      const updatedProduct = {tiltle: title, price: price, thumbnail: thumbnail, id: idNumber}
+      items[itemPosition] = updatedProduct;
+      try {
+        await fs.writeFile(this.data, JSON.stringify(items))
+        console.log("deleteAll exitoso!")
+      }
+      catch (error){
+        console.log("Error en eliminación")
+      }
+    }
 }
 
 module.exports = contenedor;

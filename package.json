@@ -13,5 +13,13 @@
     "express": "^4.18.1"
   },
   "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaquinWienberg/BackEnd-Project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JoaquinWienberg/BackEnd-Project/issues"
+  },
+  "homepage": "https://github.com/JoaquinWienberg/BackEnd-Project#readme",
   "description": ""
 }
