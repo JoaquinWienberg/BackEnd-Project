@@ -12,17 +12,7 @@ const routerProducts = new Router();
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
 
-// HandleBars
 
-app.engine(
-    'hbs',
-    handlebars.engine({
-        extname: '.hbs',
-        defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/layouts',
-        partialsDir: __dirname + '/views/partials'
-    })
-);
 
 // Server interactions
 
@@ -70,18 +60,18 @@ routerProducts.delete("/productos/:id", async (req, res) => {
     res.json(reStock)
 })
 
-routerProducts.get('/productos', async (req, res) => {
+
+routerProducts.get('/productosPug', async (req, res) => {
     const reStock = await stock.getAll()
-    res.render('main', {displayProducts: reStock, stockExists: true});
-})
+    res.render('main.pug', { products: reStock });
+});
 
-routerProducts.get('/nuevoproducto', (req, res) => {
-    res.render('createProduct',);
-})
-
+routerProducts.get('/nuevoproductoPug', (req, res) => {
+    res.render('createProduct.pug', { mensaje: 'Usando pug js en Express' });
+});
 
 // app setting
-app.set("view engine", "hbs");
+app.set("view engine", "pug");
 app.set("views", "./views");
 
 // Route setting

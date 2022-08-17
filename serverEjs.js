@@ -12,17 +12,8 @@ const routerProducts = new Router();
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
 
-// HandleBars
 
-app.engine(
-    'hbs',
-    handlebars.engine({
-        extname: '.hbs',
-        defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/layouts',
-        partialsDir: __dirname + '/views/partials'
-    })
-);
+
 
 // Server interactions
 
@@ -70,18 +61,19 @@ routerProducts.delete("/productos/:id", async (req, res) => {
     res.json(reStock)
 })
 
-routerProducts.get('/productos', async (req, res) => {
+routerProducts.get('/productosEjs', async (req, res) => {
     const reStock = await stock.getAll()
     res.render('main', {displayProducts: reStock, stockExists: true});
 })
 
-routerProducts.get('/nuevoproducto', (req, res) => {
+routerProducts.get('/nuevoproductoEjs', (req, res) => {
     res.render('createProduct',);
 })
 
 
+
 // app setting
-app.set("view engine", "hbs");
+app.set("view engine", "ejs");
 app.set("views", "./views");
 
 // Route setting

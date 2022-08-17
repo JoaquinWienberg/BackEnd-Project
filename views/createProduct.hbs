@@ -1,0 +1,13 @@
+
+<h2 class="text-center">Inserte la información del producto para agregar</h2>
+<div class="d-flex justify-content-center"></div>
+    <form action="/api/productos" method="POST">
+        <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Nombre del producto <p><input type="text" name="title"></div>
+        <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Precio: <p><input type="text" name="price"></div>
+        <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Imagen<p><input type="text" name="thumbnail"></div>
+        <div class="d-flex justify-content-center align-items-center">
+        <button type="submit" class="btn btn-dark m-2" style="max-height: 30px;">Añadir</button>
+        <button type="button" class="btn btn-dark" onclick="location.href='/api/productos'" style="max-height: 30px;"> Ver productos</button>
+        </div>
+    </form>
+</div>
