@@ -10,10 +10,10 @@ const io = new IOServer(httpServer)
 const { Socket } = require("dgram")
 // Stock class
 const Contenedor = require("./products")
-const stock = new Contenedor("./catalog.txt")
+const stock = new Contenedor("./txt/catalog.txt")
 // Chat class
 const SystemChat = require("./chat")
-const sysChat = new SystemChat("./chats.txt")
+const sysChat = new SystemChat("./txt/chats.txt")
 
 // Websocket
 
