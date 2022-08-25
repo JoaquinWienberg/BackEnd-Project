@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product listing</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+    integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1 class="text-center m-5">Welcome to the products database</h1>
+    <h2 class="text-center m-3">Add the new product information</h2>
+    <div class="d-flex justify-content-center"></div>
+        <form> <!---action="/productos" method="POST"> --->
+            <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Product name <p><input type="text" name="title" id="newProdName"></div>
+            <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Price: <p><input type="text" name="price" id="newProdPrice"></div>
+            <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Image Url<p><input type="text" name="thumbnail" id="newProdThumbnail"></div>
+            <div class="d-flex justify-content-center align-items-center">
+            <button type="button" class="btn btn-dark m-2" style="max-height: 30px;" id="addProdBtn">Add</button>
+            <!--- <button type="button" class="btn btn-dark" onclick="location.href='/productos'" style="max-height: 30px;"> Ver productos</button> --->
+            </div>
+        </form>
+    </div>
+    <div id="itemsDisplay">
+
+    </div>
+    <div style="margin-left: auto; margin-right: auto;">
+        <h2 class="text-center my-4">Chat</h2>
+        <form class="d-flex justify-content-center">
+            <input type="email" id="user" placeholder="Email" class="border border-primary rounded-3 mx-1" required>
+            <input type="text" name="text" id="text" placeholder="Write your message" class="border border-primary rounded-3 mx-1">
+            <input type="submit" name="" id="chatForm" value="Send" class="btn btn-dark border-primary mx-1">
+        </form>
+        <div id="messages" class="d-flex align-items-center border border-primary rounded-3 flex-column" style="max-width: 600px; margin: 10px auto" >
+        </div>
+    </div>
+    <script src="../js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+</body>
+</html>

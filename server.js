@@ -1,11 +1,28 @@
 // Express setup
 const express  = require("express")
 const { Router } = express;
+const { Server: HttpServer } = require("http")
+const { Server: IOServer } = require("socket.io") 
 const handlebars = require('express-handlebars');
 const app = express();
+const httpServer = new HttpServer(app)
+const io = new IOServer(httpServer)
+const { Socket } = require("dgram")
 // Stock class
 const Contenedor = require("./products")
 const stock = new Contenedor("./catalog.txt")
+// Chat class
+const SystemChat = require("./chat")
+const sysChat = new SystemChat("./chats.txt")
+
+// Websocket
+
+const messages2 = [] // Contains the chat messages
+
+
+
+
+
 
 // Router
 const routerProducts = new Router();
@@ -19,18 +36,12 @@ app.engine(
     handlebars.engine({
         extname: '.hbs',
         defaultLayout: 'index.hbs',
-        layoutsDir: __dirname + '/views/layouts',
-        partialsDir: __dirname + '/views/partials'
+        layoutsDir: __dirname + '/public/views/layouts',
+        partialsDir: __dirname + '/public/views/partials'
     })
 );
 
 // Server interactions
-
-/*routerProducts.get("/productos", async (req, res) => {
-    const reStock = await stock.getAll()
-    console.log(reStock)
-    res.send(reStock)
-})*/
 
 routerProducts.get("/productoRandom", async (req, res) => {
     const getProducts = await stock.getAll()
@@ -45,7 +56,7 @@ routerProducts.get("/productos/:id", async (req, res) => {
     const selStock = await stock.getById(parseInt(id))
     if ( parseInt(id) <= reStock.length) {
     res.send(selStock)} else {
-    res.send("Producto no encontrado")
+    res.send("Product not found")
     }
 })
 
@@ -53,7 +64,7 @@ routerProducts.post("/productos", async (req, res) => {
     const newProd = req.body
     console.log(req.body)
     await stock.save(newProd.title, newProd.price, newProd.thumbnail)
-    console.log("Post corrido")
+    console.log("Post done!")
     //res.json(newProd)
 })
 
@@ -79,24 +90,49 @@ routerProducts.get('/nuevoproducto', (req, res) => {
     res.render('createProduct',);
 })
 
+routerProducts.get('/products', async (req, res) => {
+    res.sendFile('index.html', { root: __dirname + "/public/html"});
+});
+
 
 // app setting
 app.set("view engine", "hbs");
-app.set("views", "./views");
+app.set("views", "./public/views");
 
 // Route setting
 
-app.use('/api', routerProducts)
+app.use('/', routerProducts)
 app.use(express.static('public'));
 
+io.on('connection', async socket => {
+    console.log("New client connected")
+    const messages = await sysChat.getMsg()
+    socket.emit('messages' , messages)  // Chat logs
+    
+    const assets = await stock.getAll()
+    socket.emit("products", assets)
+
+    
+    socket.on("new-messages", data => {
+        messages.push(data)
+        sysChat.save(data)
+        io.sockets.emit("messages", messages) // Displays the new message in the chat
+    })
+
+    socket.on("new-product", async data => {
+        await stock.save(data.title, data.price, data.thumbnail)
+        assets.push(data)
+        io.sockets.emit("products", assets)
+    })
+})
 
 // Server listen
 
-const server = app.listen(8080, () => {
-    console.log(`Se ha dado de alta el servidor en el puerto ${server.address().port} `)
+httpServer.listen(8080, () => {
+    console.log(`Server is listening in port: ${httpServer.address().port} `)
 })
 
-server.on("error", error => console.log(`Error en el servidor ${error}`))
+httpServer.on("error", error => console.log(`Server error ${error}`))
 
 
 

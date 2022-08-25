@@ -6,7 +6,7 @@ class contenedor {
       this.data = data
     }
 
-    // Función para agregar producto nuevo
+    // Adds new product
 
     async save(title, price, thumbnail) {
       const items = await this.getAll()
@@ -16,14 +16,14 @@ class contenedor {
       console.log(items)
       try {
         await fs.writeFile(this.data, JSON.stringify(items))
-        console.log(`Escritura exitosa. Id del nuevo producto: ` + newItem.id)
+        console.log(`New product added, id: ` + newItem.id)
       }
       catch(err)  {
-        console.log ("Error de escritura")
+        console.log ("Writing error")
       }
     }
 
-    // Obtener producto por su ID
+    // Get product by ID
 
     async getById(idNumber) {
       const allItems = await this.getAll()
@@ -32,33 +32,33 @@ class contenedor {
       return itemId
     }
 
-    // Leer el catalogo de productos
+    // Reads the product list
     
 
     async getAll() {
       try {
         const items = await fs.readFile(this.data, "utf-8");
-        console.log("Funcion getAll exitosa")
+        console.log("getAll OK")
         return JSON.parse(items)
       } catch (error){
-        console.log("Función getAll ha fallado en leer")
+        console.log("GetAll failed")
         return [];
       }
     }
 
-    // Eliminar todo el contenido del archivo txt
+    // Deletes the whole txt product list
 
     async deleteAll() {
       try {
         await fs.writeFile(this.data, "[]")
-        console.log("deleteAll exitoso!")
+        console.log("deleteAll successful!")
       }
       catch (error){
-        console.log("Error en eliminación")
+        console.log("Error when deleting")
       }
     }
 
-    // Eliminar del archivo txt el producto seleccionado por su ID
+    // Delete product by ID
 
     async deleteById(idNumber) {
       const items = await this.getAll()
@@ -66,14 +66,14 @@ class contenedor {
     
       try {
         await fs.writeFile(this.data, JSON.stringify(remItems))
-        console.log("eliminación por ID exitosa!")
+        console.log("Product by ID deleted")
       }
       catch (error) {
-        console.log("Error en ejecutar la eliminación por Id")
+        console.log("Error when deleting by ID")
       }
     }
 
-    // Actualizar información de un producto
+    // Update product information
 
     async updateById(idNumber, title, price, thumbnail) {
       const items = await this.getAll()
@@ -82,10 +82,10 @@ class contenedor {
       items[itemPosition] = updatedProduct;
       try {
         await fs.writeFile(this.data, JSON.stringify(items))
-        console.log("deleteAll exitoso!")
+        console.log("deleteAll successful")
       }
       catch (error){
-        console.log("Error en eliminación")
+        console.log("Error when deleting")
       }
     }
 }
