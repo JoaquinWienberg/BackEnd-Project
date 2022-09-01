@@ -1,71 +1,148 @@
-const socket = io.connect();
-
-function render(data) {
-    const html = data.map(elem =>{
-        return(`<div class="text-success fst-italic"><span class="fw-bold text-primary">${elem.author}- </span><span style="color:brown">${elem.date}</span> : ${elem.text}</div>`)
-    }).join(" ")
-    document.getElementById("messages").innerHTML = html
-}
-
-function addMessage(e) {
-    e.preventDefault()
-    const time = new Date()
-    const mensaje = {
-        author: document.getElementById("user").value,
-        text: document.getElementById("text").value,
-        date: time.getDate() + "/" + time.getMonth() + 1 + "/" + time.getFullYear() + " - " + time.getHours() + ":" +time.getMinutes()
-    }
-
-    const result = document.getElementById("user").value
-
-    if (result.includes("@")) {
-        socket.emit("new-messages", mensaje)
-        console.log(mensaje.author + " " + mensaje.text)} else {
-        console.log("Error: Incorrect Email")
-    }
-    return false
-}
-
-socket.on('messages', data => {
-    console.log(data)
-    render(data)
-})
-
-document.getElementById("chatForm").addEventListener("click", (e) => addMessage(e))
-
-
-// Add product list hbs in html
-
-async function makeHtmlTable(productsT) {
-    return fetch('./views/main.hbs')
-        .then(res => res.text())
-        .then(chart => {
-            const template = Handlebars.compile(chart);
-            const html = template({displayProducts: productsT, stockExists: true })
-            console.log(productsT)
-            return html
-        })
-}
-
-socket.on('products', async data => {
-    const productsDisplay = makeHtmlTable(data)
-    renderProds(productsDisplay)
-});
-
-async function renderProds(data) {
-    const prodsHTML = await data
-    document.getElementById("itemsDisplay").innerHTML = prodsHTML
-}
 
 document.getElementById("addProdBtn").addEventListener("click", (e) => addNewProduct(e))
 
 function addNewProduct(e) {
     e.preventDefault()
+    const time = new Date()
     newProd = {
         title: document.getElementById("newProdName").value,
         price: document.getElementById("newProdPrice").value,
         thumbnail: document.getElementById("newProdThumbnail").value,
+        time: time.getDate() + "/" + time.getMonth() + 1 + "/" + time.getFullYear() + " - " + time.getHours() + ":" +time.getMinutes(),
+        desc: document.getElementById("newProdDesc").value,
+        stock: document.getElementById("newProdStock").value,
+        code: document.getElementById("newProdCode").value,
     }
-    socket.emit("new-product", newProd)
-    return false
+    stockDatabase.post(newProd);
+    updateProductDisplay();
+
 }
+
+// Products display
+
+const stockDatabase = {
+
+    get: () => {
+        return fetch('/api/productos')
+            .then(data => data.json())
+    },
+    post: (newProd) => {
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProd)
+        }
+        return fetch('/api/productos', options)
+    },
+    put: (idProd, newProd) => {
+        const options = {
+            method: 'PUT',
+            body: JSON.stringify(newProd),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+        return fetch(`/api/productos/${idProd}`, options)
+    },
+    delete: (idProd) => {
+        const options = {
+            method: 'DELETE'
+        }
+        return fetch(`/api/productos/${idProd}`, options)
+    }
+}
+
+const productDisplay = document.getElementById("itemsDisplay")
+
+// Delete item
+
+function deleteProduct(itemId) {
+    return stockDatabase.delete(itemId)
+        .then(items => addProductsTable (items))
+        .then(dataHTML => {
+            productDisplay.innerHTML = dataHTML;
+            document.getElementById("item" + id).outerHTML = ""
+        })
+}
+
+// UpdateProduct
+
+function addUpdateProduct(itemId) {
+    const itemLine = document.getElementById("item"+itemId)
+    const updatedInfoLine = `
+                                <th><input type="text" name="title" placeholder="Name" id="updatedInfoTitle${itemId}"></th>
+                                <th><input type="text" name="title" placeholder="Description" id="updatedInfoDesc${itemId}"></th>
+                                <th><input type="number" name="title" placeholder="Price" id="updatedInfoPrice${itemId}"></th>
+                                <th><input type="text" name="title" placeholder="Image Url" id="updatedInfoUrl${itemId}"></th>
+                                <th><input type="number" name="title" placeholder="Stock" id="updatedInfoStock${itemId}"></th>
+                                <th><input type="text" name="title" placeholder="Code" id="updatedInfoCode${itemId}"></th>
+                                <td><a type="button" class="btn btn-primary" onclick="updateProduct('${itemId}')">Update</a></td>
+                                <th></th>
+                            `
+    let tr = document.createElement("tr")
+    tr.innerHTML = updatedInfoLine
+    itemLine.after(tr)
+}
+
+function updateProduct(itemId) {
+    let updatedProduct = {
+        title: document.getElementById(`updatedInfoTitle${itemId}`).value,
+        desc: document.getElementById(`updatedInfoDesc${itemId}`).value,
+        price: document.getElementById(`updatedInfoPrice${itemId}`).value,
+        thumbnail: document.getElementById(`updatedInfoUrl${itemId}`).value,
+        stock: document.getElementById(`updatedInfoStock${itemId}`).value,
+        code: document.getElementById(`updatedInfoCode${itemId}`).value,
+        id: itemId
+    }
+
+    console.log(updatedProduct)
+
+    stockDatabase.put(itemId, updatedProduct)
+
+    updateProductDisplay();
+}
+
+// Update display function
+
+function updateProductDisplay () {
+    return stockDatabase.get()
+        .then(items => addProductsTable (items))
+        .then(dataHTML => {
+            productDisplay.innerHTML = dataHTML
+        })
+}
+
+function addProductsTable (items) {
+    let itemTable = `<table class="table table-dark text-center"  style="max-width: 800px; margin: 15px auto">
+                <tr>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Code</th>
+                    <th>Stock</th>
+                    <th></th>
+                    <th></th>
+                </tr>`;
+    for (const objProd of items) {
+        itemTable +=  `<tr class="product text-dark table-light text-center" id="item${objProd.id}">
+                            <td>${objProd.title}</td>
+                            <td>${objProd.desc}</td>
+                            <td>$${objProd.price}</td>
+                            <td><img src=${objProd.thumbnail} width="40px" alt="Product"></td>
+                            <td>${objProd.code}</td>
+                            <td>${objProd.stock}</td>
+                            <td><a type="button" class="btn btn-danger" onclick="deleteProduct('${objProd.id}')">Delete product</a></td>
+                            <td><a type="button" class="btn btn-primary" onclick="addUpdateProduct('${objProd.id}')">Update data</a></td>
+                        </tr> `;
+    } 
+
+    itemTable += "</table>"
+
+    return itemTable
+}
+
+updateProductDisplay ()
+

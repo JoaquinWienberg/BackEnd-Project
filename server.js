@@ -9,25 +9,19 @@ const httpServer = new HttpServer(app)
 const io = new IOServer(httpServer)
 const { Socket } = require("dgram")
 // Stock class
-const Contenedor = require("./products")
+const Contenedor = require("./containers/products.js")
 const stock = new Contenedor("./txt/catalog.txt")
 // Chat class
-const SystemChat = require("./chat")
-const sysChat = new SystemChat("./txt/chats.txt")
-
-// Websocket
-
-const messages2 = [] // Contains the chat messages
-
-
-
-
+const newCart =  new Contenedor("./txt/cart.txt")
 
 
 // Router
 const routerProducts = new Router();
+const cart = new Router();
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
+cart.use(express.json())
+cart.use(express.urlencoded({extended: true}))
 
 // HandleBars
 
@@ -41,7 +35,31 @@ app.engine(
     })
 );
 
-// Server interactions
+// Admin settings
+
+const adminOn = true
+
+function nonAdminError(route, method) {
+    const error = {
+        error: -1,
+    }
+    if (ruta && metodo) {
+        error.descripcion = `route '${route}' method '${method}' not available`
+    } else {
+        error.descripcion = 'not available'
+    }
+    return error
+}
+
+function adminsCheck(req, res, next) {
+    if (!adminOn) {
+        res.json(nonAdminError())
+    } else {
+        next()
+    }
+}
+
+// Products Server interactions
 
 routerProducts.get("/productoRandom", async (req, res) => {
     const getProducts = await stock.getAll()
@@ -60,22 +78,22 @@ routerProducts.get("/productos/:id", async (req, res) => {
     }
 })
 
-routerProducts.post("/productos", async (req, res) => {
+routerProducts.post("/productos", adminsCheck, async (req, res) => {
     const newProd = req.body
     console.log(req.body)
-    await stock.save(newProd.title, newProd.price, newProd.thumbnail)
+    await stock.save(newProd.title, newProd.price, newProd.thumbnail, newProd.time, newProd.desc, newProd.stock, newProd.code)
     console.log("Post done!")
     //res.json(newProd)
 })
 
-routerProducts.put("/productos/:id", async (req, res) => {
+routerProducts.put("/productos/:id", adminsCheck, async (req, res) => {
     const { id } = req.params;
     const updatedProd = req.body;
-    const reStock = await stock.updateById(id, updatedProd.title, updatedProd.price, updatedProd.thumbnail);
+    const reStock = await stock.updateById(id, updatedProd.title, updatedProd.price, updatedProd.thumbnail, updatedProd.time, updatedProd.desc, updatedProd.stock, updatedProd.code);
     res.json(reStock)
 })
 
-routerProducts.delete("/productos/:id", async (req, res) => {
+routerProducts.delete("/productos/:id", adminsCheck, async (req, res) => {
     const { id } = req.params;
     const reStock = await stock.deleteById(id);
     res.json(reStock)
@@ -83,57 +101,78 @@ routerProducts.delete("/productos/:id", async (req, res) => {
 
 routerProducts.get('/productos', async (req, res) => {
     const reStock = await stock.getAll()
-    res.render('main', {displayProducts: reStock, stockExists: true});
+    res.json(reStock);
 })
 
-routerProducts.get('/nuevoproducto', (req, res) => {
-    res.render('createProduct',);
-})
 
 routerProducts.get('/products', async (req, res) => {
     res.sendFile('index.html', { root: __dirname + "/public/html"});
 });
 
+// Cart Server interactions
 
-// app setting
-app.set("view engine", "hbs");
-app.set("views", "./public/views");
+cart.get('/cartdb', async (req, res) => {
+    const reStock = await newCart.getAll()
+    res.json(reStock);
+})
+
+/*cart.get("/cart/:id", async (req, res) => {
+    const { id } = req.params;
+    const cart = await newCart.getAll()
+    const selCart = await newCart.getById(parseInt(id))
+    if ( parseInt(id) <= selCart.length) {
+    res.send(selCart)} else {
+    res.send("Product not found")
+    }
+})*/
+
+cart.post("/cart", async (req, res) => {
+    const cart = req.body
+    await newCart.saveCart(cart)
+    console.log("Post done!")
+})
+
+cart.post("/cart/:cart/:id", async (req, res) => {
+    const { id , cart} = req.params;
+    const prod = req.body
+    await newCart.addProductToCart(id, cart, prod)
+    console.log("Post done!")
+})
+
+
+cart.delete("/cart/:id", async (req, res) => {
+    const { id } = req.params;
+    const reStock = await newCart.deleteById(id);
+    res.json(reStock)
+})
+
+cart.delete("/cart/:cart/:id", async (req, res) => {
+    const { id , cart} = req.params;
+    await newCart.deleteProductFromCart(id, cart)
+    res.json(newCart)
+})
+
+cart.get('/productos', async (req, res) => {
+    const reStock = await stock.getAll()
+    res.json(reStock);
+})
+
+
+cart.get('/cart', async (req, res) => {
+    res.sendFile('cart.html', { root: __dirname + "/public/html"});
+});
+
 
 // Route setting
 
-app.use('/', routerProducts)
+app.use('/api', routerProducts)
+app.use('/api', cart)
 app.use(express.static('public'));
-
-io.on('connection', async socket => {
-    console.log("New client connected")
-    const messages = await sysChat.getMsg()
-    socket.emit('messages' , messages)  // Chat logs
-    
-    const assets = await stock.getAll()
-    socket.emit("products", assets)
-
-    
-    socket.on("new-messages", data => {
-        messages.push(data)
-        sysChat.save(data)
-        io.sockets.emit("messages", messages) // Displays the new message in the chat
-    })
-
-    socket.on("new-product", async data => {
-        await stock.save(data.title, data.price, data.thumbnail)
-        assets.push(data)
-        io.sockets.emit("products", assets)
-    })
+app.use((req, res, next) => {
+    errorObj = {msg:"Error 404 - Can't find that!", pathErr: req.path }
+    res.status(404).send(errorObj)
 })
 
-// Server listen
 
-httpServer.listen(8080, () => {
-    console.log(`Server is listening in port: ${httpServer.address().port} `)
-})
-
-httpServer.on("error", error => console.log(`Server error ${error}`))
-
-
-
+module.exports = app
 
