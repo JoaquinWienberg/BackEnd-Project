@@ -1,36 +1,53 @@
 
-const { info } = require("console")
-const { promises: fs } = require("fs")
+
+//const { promises: fs } = require("fs")
+
+import knex from "knex"
 
 class contenedor {
-    constructor(data) {
-      this.data = data
+    constructor(config, table) {
+      this.knex = knex(config)
+      this.table = table
     }
 
     // Adds new product
 
     async save(title, price, thumbnail, time, desc, stock, code) {
-      const items = await this.getAll()
-      const itemNumber = items.length + 1
-      const newItem = {title: title, price: parseInt(price), thumbnail: thumbnail, id: itemNumber, time: time, desc: desc, stock: parseInt(stock), code: code}
-      items.push(newItem)
-      console.log(items)
       try {
-        await fs.writeFile(this.data, JSON.stringify(items))
-        console.log(`New product added, id: ` + newItem.id)
+        await this.knex(this.table).insert({title: title, price: parseInt(price), thumbnail: thumbnail, timestamp: time, desc: desc, stock: parseInt(stock), code: code})
+        console.log(`New product added`)
       }
       catch(err)  {
+        console.log(err)
         console.log ("Writing error")
       }
     }
 
+    // Save msg
+
+    async saveMsg (author, time, text) {       
+      try {
+          await this.knex(this.table).insert({author: author, time: time, text: text})
+          console.log(`Message saved`)
+      }
+      catch (err) {
+          console.log(err)
+          console.log("Error when saving message")
+      }
+  }
+
     // Get product by ID
 
     async getById(idNumber) {
-      const allItems = await this.getAll()
-      const itemId = allItems.find (product => product.id == idNumber)
-      //console.log(itemId)
-      return itemId
+      try {
+        const productById = await this.knex.from(this.table).select('*').where('id', idNumber);
+        // return JSON.parse(productById)
+        return productById
+      }
+
+      catch (err) {
+        return []
+      }
     }
 
     // Reads the product list
@@ -38,11 +55,11 @@ class contenedor {
 
     async getAll() {
       try {
-        const items = await fs.readFile(this.data, "utf-8");
+        const items = await this.knex(this.table).select("*")
         console.log("getAll OK")
-        return JSON.parse(items)
+        return items
       } catch (error){
-        console.log("GetAll failed")
+        console.log(error)
         return [];
       }
     }
@@ -51,7 +68,7 @@ class contenedor {
 
     async deleteAll() {
       try {
-        await fs.writeFile(this.data, "[]")
+        await this.knex.from(this.table).del()
         console.log("deleteAll successful!")
       }
       catch (error){
@@ -62,11 +79,9 @@ class contenedor {
     // Delete product by ID
 
     async deleteById(idNumber) {
-      const items = await this.getAll()
-      const remItems = items.filter(info => info.id != idNumber)
     
       try {
-        await fs.writeFile(this.data, JSON.stringify(remItems))
+        await this.knex.from(this.table).where('id', idNumber).del()
         console.log("Product/Cart by ID deleted")
       }
       catch (error) {
@@ -76,20 +91,18 @@ class contenedor {
 
     // Update product information
 
-    async updateById(idNumber, title, price, thumbnail) {
-      const items = await this.getAll()
-      const itemPosition = idNumber - 1
-      const updatedProduct = {title: title, price: price, thumbnail: thumbnail, id: idNumber}
-      items[itemPosition] = updatedProduct;
+    async updateById(idNumber, title, price, thumbnail, time, desc, stock, code) {
       try {
-        await fs.writeFile(this.data, JSON.stringify(items))
-        console.log("deleteAll successful")
+        await this.knex.from(this.table).where('id', idNumber).update({title: title, price: price, thumbnail: thumbnail, timestamp:time, desc: desc, stock: stock, code: code})
+        console.log("Update by ID successful")
       }
       catch (error){
-        console.log("Error when deleting")
+        console.log("Error when udpating by ID")
       }
     }
 
+    /* CART CONTENT
+    
     // Create Cart
 
     async saveCart(cartList) {
@@ -145,12 +158,10 @@ class contenedor {
         console.log("Error when adding product to cart")
       }
     }
+    */
+} 
 
-}
-
-module.exports = contenedor;
-
-const currentCatalog = new contenedor ("./catalog.txt")
+export default contenedor
 
 
 
