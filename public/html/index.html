@@ -13,7 +13,7 @@
 </head>
 <body>
     <h1 class="text-center m-5">Welcome to the products database</h1>
-    <h2 class="text-center m-3">Add the new product information</h2>
+    <!---<h2 class="text-center m-3">Add the new product information</h2> --->
     <div class="d-flex justify-content-center"></div>
         <form> <!---action="/productos" method="POST"> --->
             <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Product name <p><input type="text" name="title" id="newProdName"></div>
@@ -35,7 +35,12 @@
         <h2 class="text-center my-4">Chat</h2>
         <form class="d-flex justify-content-center">
             <input type="email" id="user" placeholder="Email" class="border border-primary rounded-3 mx-1" required>
+            <input type="text" id="name" placeholder="name" class="border border-primary rounded-3 mx-1" required>
+            <input type="text" id="surname" placeholder="Surname" class="border border-primary rounded-3 mx-1" required>
+            <input type="number" id="age" placeholder="Age" class="border border-primary rounded-3 mx-1" required>
+            <input type="text" id="alias" placeholder="Alias" class="border border-primary rounded-3 mx-1" required>
             <input type="text" name="text" id="text" placeholder="Write your message" class="border border-primary rounded-3 mx-1">
+            <input type="text" id="avatar" placeholder="avatar" class="border border-primary rounded-3 mx-1" required>
             <input type="submit" name="" id="chatForm" value="Send" class="btn btn-dark border-primary mx-1">
         </form>
         <div id="messages" class="d-flex align-items-center border border-primary rounded-3 flex-column" style="max-width: 600px; margin: 10px auto" >

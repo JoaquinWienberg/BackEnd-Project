@@ -1,4 +1,13 @@
+import faker from "faker";
+faker.locale = 'es';
 
+function createProduct() {
+  return {
+      title: faker.commerce.product(),
+      price: faker.commerce.price(),
+      thumbnail: faker.image.image()
+  }
+};
 
 //const { promises: fs } = require("fs")
 
@@ -101,64 +110,17 @@ class contenedor {
       }
     }
 
-    /* CART CONTENT
-    
-    // Create Cart
+    // DESAFIO 28/ 9
 
-    async saveCart(cartList) {
-      const items = await this.getAll()
-      const itemNumber = items.length + 1
-      const timestamp = new Date()
-      const newItem = {id: itemNumber, date: timestamp, products: cartList}
-      items.push(newItem)
-      console.log(newItem)
-      try {
-        await fs.writeFile(this.data, JSON.stringify(items))
-        console.log(`New cart added, id: ` + newItem.id)
+    async randomProd () {
+      const displayNew = []
+      for (let i = 1; i <= 5; i++) {
+          const newProd = createProduct()
+          displayNew.push(newProd)
       }
-      catch(err)  {
-        console.log ("Writing error")
-      }
-    }
+      return displayNew
+  }
 
-    // Delete product by id from cart
-
-    async deleteProductFromCart (prodId, cartId) {
-      const items = await this.getAll();
-      const selectedCart = items.filter(info => info.id == cartId)
-      const cartItems = selectedCart[0].products;
-      const newCartItems = cartItems.filter(info2 => info2.id != prodId)
-      const time = new Date() 
-      const newCart = {id: cartId, time: time, products: newCartItems}
-      const filteredItems = items.filter(info3 => info3.id != cartId)
-      filteredItems.push(newCart)
-      try {
-        await fs.writeFile(this.data, JSON.stringify(filteredItems))
-        console.log("deleted product from cart successful")
-      }
-      catch (error){
-        console.log("Error when deleting product from cart")
-      }
-
-    }
-
-    // Add product by ID to cart
-
-    async addProductToCart (prodId, cartId, prod) {
-      const items = await this.getAll();
-      const selectedCart = items.filter(info => info.id == cartId)
-      selectedCart[0].products.push(prod)
-      const filteredItems = items.filter(info2 => info2.id != cartId)
-      filteredItems.push(selectedCart)
-      try {
-        await fs.writeFile(this.data, JSON.stringify(filteredItems))
-        console.log("Successfuly added product to cart")
-      }
-      catch (error){
-        console.log("Error when adding product to cart")
-      }
-    }
-    */
 } 
 
 export default contenedor

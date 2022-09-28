@@ -2,7 +2,7 @@ const socket = io.connect();
 
 function render(data) {
     const html = data.map(elem =>{
-        return(`<div class="text-success fst-italic"><span class="fw-bold text-primary">${elem.author}- </span><span style="color:brown">${elem.time}</span> : ${elem.text}</div>`)
+        return(`<div class="text-success fst-italic"><span class="fw-bold text-primary">${elem.id}- </span><span class="fw-bold text-primary">${elem.firstName} ${elem.lastName}- ${elem.age} - ${elem.alias} - ${elem.avatar}</span><span style="color:brown">${elem.timedate}</span> : ${elem.text}</div>`)
     }).join(" ")
     document.getElementById("messages").innerHTML = html
 }
@@ -11,9 +11,17 @@ function addMessage(e) {
     e.preventDefault()
     const time = new Date()
     const mensaje = {
-        author: document.getElementById("user").value,
+        author: {
+            id: document.getElementById("user").value,
+            timedate: time.getDate() + "/" + (parseInt(time.getMonth()) + 1) + "/" + time.getFullYear() + " - " + time.getHours() + ":" +time.getMinutes(),
+            firstName: document.getElementById("name").value,
+            lastName: document.getElementById("surname").value,
+            alias: document.getElementById("alias").value,
+            avatar: document.getElementById("avatar").value,
+            age: document.getElementById("age").value,
+        },
+
         text: document.getElementById("text").value,
-        timedate: time.getDate() + "/" + (parseInt(time.getMonth()) + 1) + "/" + time.getFullYear() + " - " + time.getHours() + ":" +time.getMinutes()
     }
 
     const result = document.getElementById("user").value

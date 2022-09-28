@@ -8,13 +8,15 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import adminsCheck from "./scripts/admin.js"
 import routerProducts from "./scripts/routerProducts.js"
+import faker from "faker";
+faker.locale = "es"
 
 const { Router } = express;
 const app = express();
 
 // Stock class
 const Contenedor = contenedor
-//const stock = new Contenedor(config.mariaDb, "products")
+const stock = new Contenedor(config.mariaDb, "products")
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +42,15 @@ app.engine(
 routerProducts.get('/products', async (req, res) => {
     res.sendFile('index.html', { root: __dirname +"/public/html"});
 });
+
+app.get("/api/productos-test",  async (req, res) => {
+    const allProducts = await stock.randomProd()
+    if (allProducts.length > 0) {
+        res.render('main', {displayProducts: allProducts, stockExists: true});
+    } else {
+        res.render('main', {stockExists: false});
+    }
+})
 
 // app setting
 app.set("view engine", "hbs");
