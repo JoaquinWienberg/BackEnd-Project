@@ -6,10 +6,12 @@ import config from "./scripts/config.js"
 const httpServer = new HttpServer(app)
 const io = new Socket(httpServer)
 import SystemChat from "./containers/systemChat.js"
-import { normalize, schema, denormalize} from "normalizr";
+import normalizr from 'normalizr';
+const normalize = normalizr.normalize;
+const denormalize = normalizr.denormalize;
+const schema = normalizr.schema;
 import util from "util";
-import mongoose, { model } from 'mongoose' 
-import { stringify } from "querystring"
+
 
 // chat class
 const Contenedor = contenedor
@@ -24,79 +26,45 @@ async function getChat () {
 }
 const testChats = getChat()
 
+// NORMALIZR
 
-//const normalizedChat = normalize(testChats, chatLog);
+// SCHEMAS
+    
+const authorSchema = new schema.Entity('author', {}, {idAttribute: 'email'});
+const textSchema = new schema.Entity('texts', {author: authorSchema}, {idAttribute: 'id'}) ;
+const chatLogSchema = new schema.Entity('Chat',
+        { messages: [textSchema]}, {idAttribute: 'id'});
 
-const asdchat = {
-    messages: [
-    {
-    author: {
-        id: "mail1",
-        name: "Tim",
-        surname: "Del",
-        age: 22,
-        alias: "Rob",
-        avatar: "img",
-    },
-    text:"Hey!"
-    },
-        {
-    author: {
-        id: "mail2",
-        name: "Jam",
-        surname: "Rtu",
-        age: 23,
-        alias: "Dan",
-        avatar: "img",
-    },
-    text:"Hello!"
-    },
-    {
-    author: {
-        id: "mail2",
-        name: "Jam",
-        surname: "Rtu",
-        age: 23,
-        alias: "Dan",
-        avatar: "img",
-    },
-    text:"Hello sir!"
-    },
-]}
+
+
+const normalizeChat = (data) => normalize(data, chatLogSchema)
+
+async function displayNormalizedChat() {
+    const messages = await sysChat.getAll();
+    const normalizedItem = normalizeChat({ id: 'messages', messages });
+    console.log(util.inspect(normalizedItem, false, 12, true));
+    return normalizedItem
+}
 
 // Websocket
-
-//const messages2 = [] // Contains the chat messages
 
 io.on('connection', async socket => {
     console.log("New client connected")
     const messages = await sysChat.getAll()
-    
-    const authorSchema = new schema.Entity("author");
-    const textSchema = new schema.Entity("text");
-    const chatLog = new schema.Entity("chatLog",{
-        author: authorSchema,
-        text: textSchema,
-    });
 
-    function print(objeto) {
-    console.log(util.inspect(objeto, false, 12, true));
-    }
-    const normalizedChat = normalize(asdchat, chatLog);
-    
-    const denormalizedEmpresa = denormalize(normalizedChat.result, chatLog, normalizedChat.chatLog);
-    print(normalizedChat);
     //console.log(normalizedChat)
-    socket.emit('messages' , messages)  // Chat logs
+    socket.emit('messages' , await displayNormalizedChat())  // Chat logs
     
     const assets = await stock.getAll()
     socket.emit("products", assets)
 
     
-    socket.on("new-messages", data => {
-        messages.push(data)
-        sysChat.saveMsg(data)
-        io.sockets.emit("messages", messages) // Displays the new message in the chat
+    socket.on("new-messages", async data => {
+        const chats = data;
+        chats.id = messages.length + 1
+        messages.push(chats)
+        await sysChat.saveMsg(chats)
+        io.sockets.emit("messages", await displayNormalizedChat()) // Displays the new message in the chat
     })
 
     socket.on("new-product", async data => {
