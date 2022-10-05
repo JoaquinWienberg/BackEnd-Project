@@ -14,6 +14,15 @@ export default {
             password: '',
             database: 'stockdatabase'
         }
+    },
+    mongodb: {
+        cnxStr: "mongodb+srv://Joaquin:BN633XKnqPfWKOmr@cluster0.wjqzet9.mongodb.net/eCommerce",
+        options: {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            //useCreateIndex: true,
+            serverSelectionTimeoutMS: 5000,
+        }
     }
 }
 

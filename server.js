@@ -9,7 +9,11 @@ import { fileURLToPath } from 'url';
 import adminsCheck from "./scripts/admin.js"
 import routerProducts from "./scripts/routerProducts.js"
 import faker from "faker";
+import session from "express-session"
+import MongoStore from "connect-mongo"
 faker.locale = "es"
+
+const mongoDB = config.mongodb
 
 const { Router } = express;
 const app = express();
@@ -25,6 +29,9 @@ const __dirname = path.dirname(__filename);
 
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+
 
 // HandleBars
 
@@ -49,6 +56,61 @@ app.get("/api/productos-test",  async (req, res) => {
         res.render('main', {displayProducts: allProducts, stockExists: true});
     } else {
         res.render('main', {stockExists: false});
+    }
+})
+
+// MONGO LOGIN
+
+
+app.use(session({
+    store: MongoStore.create({ mongoUrl: mongoDB.cnxStr,
+                                mongoOptions: mongoDB.options}),
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}))
+
+
+// LOGINS
+app.get('/login', async (req, res) => {
+    res.sendFile('login.html', { root: __dirname +"/public/views"});
+});
+
+
+app.get('/logout', (req,res) => {
+    const nombre = req.session.user
+    req.session.destroy( err => {
+        if(!err) {
+            res.render('logout', {nombre: nombre})
+        }
+        else res.send({status: 'Logout ERROR', body: err})
+    })
+});
+
+function auth(req, res, next) {
+    if (req.session?.user !== '') {
+        return next();
+    }
+    return res.redirect('/login');
+}
+
+
+
+app.post('/login', (req, res) => {
+    let { nombre } = req.body;
+    req.session.user = nombre;
+    res.redirect('/home');
+});
+
+app.get('/home', auth, (req, res) => {
+    const nombre = req.session.user
+    if (req.session.user) {
+        res.render('index', {nombre: nombre});
+    } else {
+        res.redirect('/login');
     }
 })
 
