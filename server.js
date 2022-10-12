@@ -5,14 +5,20 @@ import handlebars from "express-handlebars"
 import contenedor from "./containers/products.js"
 import config from "./scripts/config.js"
 import path from "path";
+import url from 'url';
 import { fileURLToPath } from 'url';
 import adminsCheck from "./scripts/admin.js"
 import routerProducts from "./scripts/routerProducts.js"
 import faker from "faker";
 import session from "express-session"
+import bCrypt from "bcrypt"
+import passport from "passport"
+import passportlocal from 'passport-local';
 import MongoStore from "connect-mongo"
+import routes from "./routes.js"
+import User from "./scripts/models.js"
 faker.locale = "es"
-
+const LocalStrategy = passportlocal.Strategy;
 const mongoDB = config.mongodb
 
 const { Router } = express;
@@ -25,6 +31,8 @@ const stock = new Contenedor(config.mariaDb, "products")
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+
 // Router
 
 routerProducts.use(express.json())
@@ -32,6 +40,76 @@ routerProducts.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
+// Register and Login
+
+passport.use("signup", new LocalStrategy({
+    passReqToCallback: true
+},
+
+    (req, username, password, done) => {
+        User.findOne({"username": username}, (err, user) => {
+            if (err) {
+                return done(err)
+            }
+
+            if (user) {
+                return done(null,false)
+            }
+
+            const newUser = {
+                username: username,
+                password: createHash(password),
+                email: req.body.email,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName
+            }
+
+            User.create(newUser,(err,userWithid) => {
+                if (err) {
+                    return done(err);
+                }
+
+                return done(null, userWithid);
+            })
+        })
+    }
+))
+
+passport.use ("login", new LocalStrategy(
+    (username, password, done) => {
+        User.findOne ({ username }, (err, user) => {
+            if (err) {
+                return done(err)
+            }
+
+            if (!user) {
+                return done(null, false)
+            }
+
+            if (!isValidPassword(user, password)) {
+                return done(null, false)
+            }
+
+            return done (null, user)
+        })
+    }
+))
+
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+})
+
+passport.deserializeUser((id, done) => {
+    User.findById(id, done)
+})
+
+function createHash(password) {
+    return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+}
+
+function isValidPassword(user, password) {
+    return bCrypt.compareSync(password, user.password);
+}
 
 // HandleBars
 
@@ -73,14 +151,23 @@ app.use(session({
     }
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-// LOGINS
-app.get('/login', async (req, res) => {
+
+// Login and Logout
+/*app.get('/login', async (req, res) => {
     res.sendFile('login.html', { root: __dirname +"/public/views"});
-});
+});*/
+
+app.get('/login', routes.getLogin);
+app.post('/login', passport.authenticate('login', {
+    failureRedirect: '/faillogin'
+}), routes.postLogin);
+app.get('/faillogin', routes.getFailLogin);
 
 
-app.get('/logout', (req,res) => {
+/*app.get('/logout', (req,res) => {
     const nombre = req.session.user
     req.session.destroy( err => {
         if(!err) {
@@ -88,8 +175,38 @@ app.get('/logout', (req,res) => {
         }
         else res.send({status: 'Logout ERROR', body: err})
     })
+});*/
+
+app.get('/logout', routes.getLogout);
+
+//SIGNUP
+app.get('/signup', routes.getSignUp);
+app.post('/signup', passport.authenticate('signup', {
+    failureRedirect: '/failsignup'
+}), routes.postSignup);
+app.get('/failsignup', routes.getFailsignup);
+
+//Last part
+function checkAuthentication(req, res, next) {
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+}
+
+app.get('/home', checkAuthentication, (req, res) => {
+    const { user } = req;
+    console.log(user);
+    const nombre = req.session.user
+    if (req.session.user) {
+        res.render('index', {nombre: nombre});
+    } else {
+        res.redirect('/login');
+    }
 });
 
+/*
 function auth(req, res, next) {
     if (req.session?.user !== '') {
         return next();
@@ -112,7 +229,7 @@ app.get('/home', auth, (req, res) => {
     } else {
         res.redirect('/login');
     }
-})
+})*/
 
 // app setting
 app.set("view engine", "hbs");
