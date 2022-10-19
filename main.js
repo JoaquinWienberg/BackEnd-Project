@@ -12,6 +12,7 @@ const denormalize = normalizr.denormalize;
 const schema = normalizr.schema;
 import util from "util";
 import dbConnect from "./scripts/controllersdb.js"
+import minimist from "minimist"
 
 
 // chat class
@@ -78,12 +79,17 @@ io.on('connection', async socket => {
 
 // Server listen
 
+const ports = { 
+    default: { port: 8080},
+    alias: {p: "port"}
+}
+
 dbConnect(config.mongodb.cnxStr, err => {
 
     if (err) return console.log('DB connection error', err);
     console.log('Connected to DB!');
 
-    httpServer.listen(8080, () => {
+    httpServer.listen(minimist(process.argv.slice(2), ports), () => {
         console.log(`Server is listening in port: ${httpServer.address().port} `)
     })
 

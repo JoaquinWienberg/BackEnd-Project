@@ -17,6 +17,9 @@ import passportlocal from 'passport-local';
 import MongoStore from "connect-mongo"
 import routes from "./routes.js"
 import User from "./scripts/models.js"
+import dotenv from "dotenv"
+import { fork } from "child_process"
+
 faker.locale = "es"
 const LocalStrategy = passportlocal.Strategy;
 const mongoDB = config.mongodb
@@ -31,10 +34,17 @@ const stock = new Contenedor(config.mariaDb, "products")
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// dotenv
 
+dotenv.config({
+    path: path.resolve(__dirname, ".env")
+})
 
 // Router
+const randoms = new Router();
 
+randoms.use(express.json())
+randoms.use(express.urlencoded({extended: true}))
 routerProducts.use(express.json())
 routerProducts.use(express.urlencoded({extended: true}))
 app.use(express.json())
@@ -137,11 +147,26 @@ app.get("/api/productos-test",  async (req, res) => {
     }
 })
 
+app.get("/info",  async (req, res) => {
+    res.render('info', {argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version, memoriaRes: process.memoryUsage().rss, pathExe: process.execPath, proId: process.pid, carpeta: process.cwd() });
+
+})
+
+app.get("/randoms",  async (req, res) => {
+    const { cantidad } = req.query;
+    const forked = fork("./scripts/calculate.js");
+    forked.send(cantidad)
+    forked.on("message", objeto => {
+        res.end(objeto)
+    })
+    })
+
 // MONGO LOGIN
 
+const credentials = process.env.MONGODB
 
 app.use(session({
-    store: MongoStore.create({ mongoUrl: mongoDB.cnxStr,
+    store: MongoStore.create({ mongoUrl: credentials,
                                 mongoOptions: mongoDB.options}),
     secret: "secret",
     resave: false,
@@ -154,28 +179,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-// Login and Logout
-/*app.get('/login', async (req, res) => {
-    res.sendFile('login.html', { root: __dirname +"/public/views"});
-});*/
-
 app.get('/login', routes.getLogin);
 app.post('/login', passport.authenticate('login', {
     failureRedirect: '/faillogin'
 }), routes.postLogin);
 app.get('/faillogin', routes.getFailLogin);
-
-
-/*app.get('/logout', (req,res) => {
-    const nombre = req.session.user
-    req.session.destroy( err => {
-        if(!err) {
-            res.render('logout', {nombre: nombre})
-        }
-        else res.send({status: 'Logout ERROR', body: err})
-    })
-});*/
 
 app.get('/logout', routes.getLogout);
 
@@ -205,31 +213,6 @@ app.get('/home', checkAuthentication, (req, res) => {
         res.redirect('/login');
     }
 });
-
-/*
-function auth(req, res, next) {
-    if (req.session?.user !== '') {
-        return next();
-    }
-    return res.redirect('/login');
-}
-
-
-
-app.post('/login', (req, res) => {
-    let { nombre } = req.body;
-    req.session.user = nombre;
-    res.redirect('/home');
-});
-
-app.get('/home', auth, (req, res) => {
-    const nombre = req.session.user
-    if (req.session.user) {
-        res.render('index', {nombre: nombre});
-    } else {
-        res.redirect('/login');
-    }
-})*/
 
 // app setting
 app.set("view engine", "hbs");
