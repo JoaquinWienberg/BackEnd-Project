@@ -14,24 +14,24 @@
 }*/
 
 
-const getRandomNum = () => Math.ceil(Math.random() * 1000);
+const getOneRandom = () => Math.ceil(Math.random() * 1000);
 
-const randomNumbers = (tries) => {
-    let inventory = {};
-    for (let i = 0; i < tries; i++ ) {
-        const randomNum = getRandomNum();
-        Object.keys(inventory).includes(randomNum.toString()) ? inventory[randomNum]++ : (inventory[randomNum] = 1);
+const generateRandoms = (cant) => {
+    const numbers = {};
+    for (let i = 0; i < cant; i++ ) {
+        const randomNumber = getOneRandom();
+        Object.keys(numbers).includes(randomNumber.toString()) ? numbers[randomNumber]++ : (numbers[randomNumber] = 1);
     }
 
-    return inventory;
+    return numbers;
 };
 
 process.on("message", (tries) => {
     
-        const objnum = randomNumbers(tries)
+        const objnum = generateRandoms(tries)
         console.log("obj", objnum)
         process.send(objnum);
         process.exit()
 })
 
-console.log("Child process alive!", process.pid, randomNumbers(2))
+console.log("Child process alive!", process.pid)
