@@ -13,6 +13,8 @@ const schema = normalizr.schema;
 import util from "util";
 import dbConnect from "./scripts/controllersdb.js"
 import minimist from "minimist"
+import cluster from "cluster"
+import os from "os"
 
 
 // chat class
@@ -28,16 +30,12 @@ async function getChat () {
 }
 const testChats = getChat()
 
-// NORMALIZR
-
 // SCHEMAS
     
 const authorSchema = new schema.Entity('author', {}, {idAttribute: 'email'});
 const textSchema = new schema.Entity('texts', {author: authorSchema}, {idAttribute: 'id'}) ;
 const chatLogSchema = new schema.Entity('Chat',
         { messages: [textSchema]}, {idAttribute: 'id'});
-
-
 
 const normalizeChat = (data) => normalize(data, chatLogSchema)
 
@@ -79,21 +77,48 @@ io.on('connection', async socket => {
 
 // Server listen
 
+const numCpu = os.cpus().length 
+
 const ports = { 
-    default: { port: 8080},
-    alias: {p: "port"}
+    default: { port: 8080, mode: "FORK"},
+    alias: {p: "port", m: "mode"}
 }
 
-dbConnect(config.mongodb.cnxStr, err => {
+if (minimist(process.argv.slice(2), ports).mode == "CLUSTER" && cluster.isPrimary) {
+    
+    dbConnect(config.mongodb.cnxStr, err => {
 
-    if (err) return console.log('DB connection error', err);
-    console.log('Connected to DB!');
-
-    httpServer.listen(minimist(process.argv.slice(2), ports), () => {
-        console.log(`Server is listening in port: ${httpServer.address().port} `)
+        if (err) return console.log('DB connection error', err);
+        console.log('Connected to DB!');
     })
 
-    httpServer.on("error", error => console.log(`Server error ${error}`))
+    console.log(`Cores: ${numCpu}`)
 
-})
+    for (let i = 0; i < numCpu; i++) {
+        cluster.fork();
+    };
+
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Work ${worker.process.pid} died`);
+        cluster.fork();
+    });
+
+} else {
+    
+    dbConnect(config.mongodb.cnxStr, err => {
+
+        if (err) return console.log('DB connection error', err);
+        console.log('Connected to DB!');
+
+        httpServer.listen(minimist(process.argv.slice(2), ports), () => {
+            console.log(`Server is listening in port: ${httpServer.address().port} `)
+        })
+
+        httpServer.on("error", error => console.log(`Server error ${error}`))
+
+    })
+
+}
+
+
 

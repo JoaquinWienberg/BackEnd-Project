@@ -26,7 +26,8 @@ const generateRandoms = (cant) => {
     return numbers;
 };
 
-process.on("message", (tries) => {
+
+process.on("message", tries => {
     
         const objnum = generateRandoms(tries)
         console.log("obj", objnum)
@@ -34,4 +35,3 @@ process.on("message", (tries) => {
         process.exit()
 })
 
-console.log("Child process alive!", process.pid)
