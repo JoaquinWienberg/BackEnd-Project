@@ -152,8 +152,8 @@ app.get("/info",  async (req, res) => {
 
 })
 
-app.get("/randoms", async (req, res) => {
-    const cantidad = req.query.cantidad ?? 100000;
+app.get("/api/randoms", async (req, res) => {
+    const cantidad = req.query.cantidad ?? 1000;
     //console.log(cantidad)
     const forked = fork("./scripts/calculate.js");
     forked.send(cantidad)

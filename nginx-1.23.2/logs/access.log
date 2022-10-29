@@ -1,0 +1,5 @@
+127.0.0.1 - - [25/Oct/2022:23:16:42 -0300] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+127.0.0.1 - - [25/Oct/2022:23:16:42 -0300] "GET /favicon.ico HTTP/1.1" 404 555 "http://localhost/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+127.0.0.1 - - [29/Oct/2022:16:21:36 -0300] "GET /api/randoms HTTP/1.1" 502 559 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
+127.0.0.1 - - [29/Oct/2022:16:21:36 -0300] "GET /favicon.ico HTTP/1.1" 404 555 "http://localhost/api/randoms" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
+127.0.0.1 - - [29/Oct/2022:16:23:28 -0300] "GET /api/randoms HTTP/1.1" 502 559 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36"
