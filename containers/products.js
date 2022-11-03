@@ -1,5 +1,6 @@
 import faker from "faker";
 faker.locale = 'es';
+import logger from "../scripts/logger.js"
 
 function createProduct() {
   return {
@@ -28,7 +29,7 @@ class contenedor {
       }
       catch(err)  {
         console.log(err)
-        console.log ("Writing error")
+        logger.error("Writing error")
       }
     }
 
@@ -41,7 +42,7 @@ class contenedor {
       }
       catch (err) {
           console.log(err)
-          console.log("Error when saving message")
+          logger.error("Error when saving message")
       }
   }
 
@@ -81,7 +82,7 @@ class contenedor {
         console.log("deleteAll successful!")
       }
       catch (error){
-        console.log("Error when deleting")
+        logger.error("Error when deleting")
       }
     }
 
@@ -94,7 +95,7 @@ class contenedor {
         console.log("Product/Cart by ID deleted")
       }
       catch (error) {
-        console.log("Error when deleting by ID")
+        logger.error("Error when deleting by ID")
       }
     }
 
@@ -106,7 +107,7 @@ class contenedor {
         console.log("Update by ID successful")
       }
       catch (error){
-        console.log("Error when udpating by ID")
+        logger.error("Error when udpating by ID")
       }
     }
 

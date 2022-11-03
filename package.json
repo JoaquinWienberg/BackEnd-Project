@@ -4,15 +4,17 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "node benchmarks.js",
+    "start": "0x main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "autocannon": "^7.10.0",
     "bcrypt": "^5.1.0",
     "bootstrap": "^5.2.0",
+    "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
@@ -30,9 +32,9 @@
     "pug": "^3.0.2",
     "socket.io": "^4.5.1",
     "socket.io-client": "^4.5.1",
-    "sqlite3": "^5.0.11"
+    "sqlite3": "^5.0.11",
+    "winston": "^3.8.2"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JoaquinWienberg/BackEnd-Project.git"

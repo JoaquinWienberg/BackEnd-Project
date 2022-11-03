@@ -5,6 +5,7 @@ import adminsCheck from "./admin.js"
 import config from "./config.js"
 import path from "path";
 import { fileURLToPath } from 'url';
+import logger from "./logger.js";
 
 const { Router } = express;
 // Stock class
@@ -26,6 +27,7 @@ routerProducts.get("/productos/:id", async (req, res) => {
     const selStock = await stock.getById(parseInt(id))
     if ( parseInt(id) <= reStock.length) {
     res.send(selStock)} else {
+    logger.warn("Product not found")
     res.send("Product not found")
     }
 })

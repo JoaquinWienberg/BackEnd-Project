@@ -19,6 +19,8 @@ import routes from "./routes.js"
 import User from "./scripts/models.js"
 import dotenv from "dotenv"
 import { fork } from "child_process"
+import compression from "compression"
+import logger from "./scripts/logger.js"
 
 faker.locale = "es"
 const LocalStrategy = passportlocal.Strategy;
@@ -147,7 +149,14 @@ app.get("/api/productos-test",  async (req, res) => {
     }
 })
 
-app.get("/info",  async (req, res) => {
+app.get("/info", compression(), async (req, res) => {
+    logger.info("Ingreso a info exitoso!")
+    console.log({argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version})
+    res.render('info', {argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version, memoriaRes: process.memoryUsage().rss, pathExe: process.execPath, proId: process.pid, carpeta: process.cwd() });
+
+})
+
+app.get("/infosincomprimir",  async (req, res) => {
     res.render('info', {argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version, memoriaRes: process.memoryUsage().rss, pathExe: process.execPath, proId: process.pid, carpeta: process.cwd() });
 
 })
@@ -226,6 +235,7 @@ app.use('/api', routerProducts)
 app.use(express.static('public'));
 app.use((req, res, next) => {
     const errorObj = {msg:"Error 404 - Can't find that!", pathErr: req.path }
+    logger.warn("invalid URL")
     res.status(404).send(errorObj)
 })
 

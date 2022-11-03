@@ -15,6 +15,7 @@ import dbConnect from "./scripts/controllersdb.js"
 import minimist from "minimist"
 import cluster from "cluster"
 import os from "os"
+import logger from "./scripts/logger.js"
 
 
 // chat class
@@ -49,7 +50,7 @@ async function displayNormalizedChat() {
 // Websocket
 
 io.on('connection', async socket => {
-    console.log("New client connected")
+    logger.info("New client connected")
     const messages = await sysChat.getAll()
 
     //console.log(normalizedChat)
@@ -88,8 +89,8 @@ if (minimist(process.argv.slice(2), ports).mode == "CLUSTER" && cluster.isPrimar
     
     dbConnect(config.mongodb.cnxStr, err => {
 
-        if (err) return console.log('DB connection error', err);
-        console.log('Connected to DB!');
+        if (err) return logger.error('DB connection error', err);
+        logger.info('Connected to DB!');
     })
 
     console.log(`Cores: ${numCpu}`)
@@ -99,7 +100,7 @@ if (minimist(process.argv.slice(2), ports).mode == "CLUSTER" && cluster.isPrimar
     };
 
     cluster.on('exit', (worker, code, signal) => {
-        console.log(`Work ${worker.process.pid} died`);
+        logger.info(`Work ${worker.process.pid} died`);
         cluster.fork();
     });
 
@@ -107,14 +108,14 @@ if (minimist(process.argv.slice(2), ports).mode == "CLUSTER" && cluster.isPrimar
     
     dbConnect(config.mongodb.cnxStr, err => {
 
-        if (err) return console.log('DB connection error', err);
-        console.log('Connected to DB!');
+        if (err) return logger.error('DB connection error', err);
+        logger.info('Connected to DB!');
 
         httpServer.listen(minimist(process.argv.slice(2), ports), () => {
-            console.log(`Server is listening in port: ${httpServer.address().port} `)
+            logger.info(`Server is listening in port: ${httpServer.address().port} `)
         })
 
-        httpServer.on("error", error => console.log(`Server error ${error}`))
+        httpServer.on("error", error => logger.error(`Server error ${error}`))
 
     })
 
