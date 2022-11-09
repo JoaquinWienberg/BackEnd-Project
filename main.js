@@ -111,7 +111,7 @@ if (minimist(process.argv.slice(2), ports).mode == "CLUSTER" && cluster.isPrimar
         if (err) return logger.error('DB connection error', err);
         logger.info('Connected to DB!');
 
-        httpServer.listen(minimist(process.argv.slice(2), ports), () => {
+        httpServer.listen(process.env.PORT || 8080, () => {
             logger.info(`Server is listening in port: ${httpServer.address().port} `)
         })
 
