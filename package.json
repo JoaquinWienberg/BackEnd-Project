@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "node benchmarks.js",
-    "start": "0x main.js"
+    "start": "node main.js"
   },
   "keywords": [],
   "author": "",
