@@ -16,13 +16,18 @@ import minimist from "minimist"
 import cluster from "cluster"
 import os from "os"
 import logger from "./scripts/logger.js"
+import {
+    productsDaoMongo as productsMongoApi,
+    cartDaoMongo as cartsMongoApi
+} from './scripts/daos/index.js'
 
 
 // chat class
 const Contenedor = contenedor
 //const sysChat = new Contenedor(config.sqlite3, "messages")
 const sysChat = new SystemChat("./txt/chats.txt")
-const stock = new Contenedor(config.mariaDb, "products")
+const stock = productsMongoApi
+const newCart = cartsMongoApi
 
 // NORMALIZR
 async function getChat () {
@@ -43,7 +48,7 @@ const normalizeChat = (data) => normalize(data, chatLogSchema)
 async function displayNormalizedChat() {
     const messages = await sysChat.getAll();
     const normalizedItem = normalizeChat({ id: 'messages', messages });
-    console.log(util.inspect(normalizedItem, false, 12, true));
+    //console.log(util.inspect(normalizedItem, false, 12, true));
     return normalizedItem
 }
 

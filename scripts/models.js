@@ -5,5 +5,7 @@ export default mongoose.model('Users', {
     password: String,
     email: String,
     firstName: String,
-    lastName: String
+    lastName: String,
+    phone: Number,
+    photo: String
 });

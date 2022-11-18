@@ -46,9 +46,9 @@ function addMessage(e) {
 }
 
 socket.on('messages', data => {
-    console.log(data)
+    //console.log(data)
     let msgs = normalizr.denormalize(data.result, chatLogSchema, data.entities);
-    console.log(msgs)
+    //console.log(msgs)
     let normAmount = JSON.stringify(data).length;
     let dinormAmount = JSON.stringify(msgs).length;
     let reduction = parseInt((normAmount/dinormAmount)*100)
@@ -67,7 +67,7 @@ async function makeHtmlTable(productsT) {
         .then(chart => {
             const template = Handlebars.compile(chart);
             const html = template({displayProducts: productsT, stockExists: true })
-            console.log(productsT)
+            //console.log(productsT)
             return html
         })
 }
@@ -97,3 +97,4 @@ function addNewProduct(e) {
     socket.emit("new-product", newProd)
     return false
 }
+

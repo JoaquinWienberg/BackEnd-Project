@@ -1,29 +1,21 @@
 // Express setup
 import express from "express"
-import {Server as HttpServer} from "http"
 import handlebars from "express-handlebars"
 import contenedor from "./containers/products.js"
 import config from "./scripts/config.js"
 import path from "path";
-import url from 'url';
 import { fileURLToPath } from 'url';
-import adminsCheck from "./scripts/admin.js"
 import routerProducts from "./scripts/routerProducts.js"
 import faker from "faker";
 import session from "express-session"
-import bCrypt from "bcrypt"
-import passport from "passport"
-import passportlocal from 'passport-local';
+import passport from "./scripts/authentication/signIn.js"
 import MongoStore from "connect-mongo"
 import routes from "./routes.js"
-import User from "./scripts/models.js"
 import dotenv from "dotenv"
-import { fork } from "child_process"
-import compression from "compression"
 import logger from "./scripts/logger.js"
+import multer from "multer"
 
 faker.locale = "es"
-const LocalStrategy = passportlocal.Strategy;
 const mongoDB = config.mongodb
 
 const { Router } = express;
@@ -43,85 +35,23 @@ dotenv.config({
 })
 
 // Router
-const randoms = new Router();
 
-randoms.use(express.json())
-randoms.use(express.urlencoded({extended: true}))
-routerProducts.use(express.json())
-routerProducts.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-// Register and Login
+// Multer setup
 
-passport.use("signup", new LocalStrategy({
-    passReqToCallback: true
-},
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./public/uploads");
+    },
 
-    (req, username, password, done) => {
-        User.findOne({"username": username}, (err, user) => {
-            if (err) {
-                return done(err)
-            }
-
-            if (user) {
-                return done(null,false)
-            }
-
-            const newUser = {
-                username: username,
-                password: createHash(password),
-                email: req.body.email,
-                firstName: req.body.firstName,
-                lastName: req.body.lastName
-            }
-
-            User.create(newUser,(err,userWithid) => {
-                if (err) {
-                    return done(err);
-                }
-
-                return done(null, userWithid);
-            })
-        })
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + file.originalname);
     }
-))
+});
 
-passport.use ("login", new LocalStrategy(
-    (username, password, done) => {
-        User.findOne ({ username }, (err, user) => {
-            if (err) {
-                return done(err)
-            }
-
-            if (!user) {
-                return done(null, false)
-            }
-
-            if (!isValidPassword(user, password)) {
-                return done(null, false)
-            }
-
-            return done (null, user)
-        })
-    }
-))
-
-passport.serializeUser((user, done) => {
-    done(null, user._id);
-})
-
-passport.deserializeUser((id, done) => {
-    User.findById(id, done)
-})
-
-function createHash(password) {
-    return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-}
-
-function isValidPassword(user, password) {
-    return bCrypt.compareSync(password, user.password);
-}
+const upload = multer({ storage: storage})
 
 // HandleBars
 
@@ -135,43 +65,6 @@ app.engine(
     })
 );
 
-
-routerProducts.get('/products', async (req, res) => {
-    res.sendFile('index.html', { root: __dirname +"/public/html"});
-});
-
-app.get("/api/productos-test",  async (req, res) => {
-    const allProducts = await stock.randomProd()
-    if (allProducts.length > 0) {
-        res.render('main', {displayProducts: allProducts, stockExists: true});
-    } else {
-        res.render('main', {stockExists: false});
-    }
-})
-
-app.get("/info", compression(), async (req, res) => {
-    logger.info("Ingreso a info exitoso!")
-    console.log({argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version})
-    res.render('info', {argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version, memoriaRes: process.memoryUsage().rss, pathExe: process.execPath, proId: process.pid, carpeta: process.cwd() });
-
-})
-
-app.get("/infosincomprimir",  async (req, res) => {
-    res.render('info', {argumentos: process.argv.slice(2), nombrePlataforma: process.platform, nodeVer: process.version, memoriaRes: process.memoryUsage().rss, pathExe: process.execPath, proId: process.pid, carpeta: process.cwd() });
-
-})
-
-app.get("/api/randoms", async (req, res) => {
-    const cantidad = req.query.cantidad ?? 1000;
-    //console.log(cantidad)
-    const forked = fork("./scripts/calculate.js");
-    forked.send(cantidad)
-    forked.on("message", (objeto) => {
-        console.log("res", objeto)
-        res.send(objeto)
-    })
-})
-
 // MONGO LOGIN
 
 const credentials = process.env.MONGODB
@@ -179,7 +72,7 @@ const credentials = process.env.MONGODB
 app.use(session({
     store: MongoStore.create({ mongoUrl: credentials,
                                 mongoOptions: mongoDB.options}),
-    secret: "secret",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -195,12 +88,12 @@ app.post('/login', passport.authenticate('login', {
     failureRedirect: '/faillogin'
 }), routes.postLogin);
 app.get('/faillogin', routes.getFailLogin);
-
 app.get('/logout', routes.getLogout);
 
 //SIGNUP
 app.get('/signup', routes.getSignUp);
-app.post('/signup', passport.authenticate('signup', {
+app.post('/signup', upload.single("upload"),
+    passport.authenticate('signup', {
     failureRedirect: '/failsignup'
 }), routes.postSignup);
 app.get('/failsignup', routes.getFailsignup);
@@ -216,10 +109,9 @@ function checkAuthentication(req, res, next) {
 
 app.get('/home', checkAuthentication, (req, res) => {
     const { user } = req;
-    console.log(user);
     const nombre = req.session.user
     if (req.session.user) {
-        res.render('index', {nombre: nombre});
+        res.render('index', {nombre: nombre, photo: req.body.photo});
     } else {
         res.redirect('/login');
     }

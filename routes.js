@@ -18,7 +18,9 @@ function getLogin(req, res) {
             usuario: user.username,
             nombre: user.firstName,
             apellido: user.lastName,
-            email: user.email
+            email: user.email,
+            phone: user.phone,
+            photo: user.photo,
         });
     }
     else {

@@ -15,7 +15,7 @@
 <body>
     <div class="container mt-3">
         <h1 class="alert alert-success">
-            Hey {{nombre}} !
+            Hey {{nombre}} ! <img src="uploads/{{photo}}" alt="Profile Pic" >
                 <button class="btn btn-warning float-right mt-2" onclick="location.href='/logout'">
                     logout
                 </button>
@@ -23,8 +23,8 @@
     </div>
     <h1 class="text-center m-5">Welcome to the products database</h1>
     <!---<h2 class="text-center m-3">Add the new product information</h2> --->
-    <div class="d-flex justify-content-center"></div>
-        <form> <!---action="/productos" method="POST"> --->
+    <div class="d-flex justify-content-center" ></div>
+        <form hidden> <!---action="/productos" method="POST"> --->
             <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Product name <p><input type="text" name="title" id="newProdName"></div>
             <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Price: <p><input type="number" name="price" id="newProdPrice"></div>
             <div class="text-primary d-flex justify-content-center align-items-center"><p style="width: 150px; display: inline;">Desc: <p><input type="text" name="price" id="newProdDesc"></div>
@@ -39,6 +39,10 @@
     </div>
     <div id="itemsDisplay">
 
+    </div>
+    <div id="cartDisplay">
+    </div>
+    <div id="confirmedCartDisplay" class="d-flex align-items-center border border border-success rounded-3 flex-column" style="max-width: 700px; margin: 10px auto">
     </div>
     <div style="margin-left: auto; margin-right: auto;">
         <h2 class="text-center my-4">Chat</h2>
@@ -58,5 +62,6 @@
         </div>
     </div>
     <script src="../js/socket.js"></script>
+    <script src="../js/cart.js"></script>
 </body>
 </html>
