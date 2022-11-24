@@ -23,25 +23,25 @@ function getLogin(req, res) {
     }
     else {
         console.log(__dirname)
-        res.sendFile(__dirname + '/public/views/login.html');
+        res.sendFile(path.join(__dirname, "../../public/views/login.html"));
     }
 }
 
 function getSignUp(req, res) {
-    res.sendFile(__dirname + '/public/views/signup.html');
+    res.sendFile(path.join(__dirname, "../../public/views/signup.html"));
 }
 
 
 function postLogin(req, res) {
     const user = req.user;
     console.log(user);
-    res.sendFile(__dirname + '/public/views/index.html');
+    res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
 }
 
 function postSignup(req, res) {
     const user = req.user;
     console.log(user);
-    res.sendFile(__dirname + '/public/views/index.html');
+    res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
 }
 
 function getFailLogin(req, res) {
@@ -60,7 +60,7 @@ function getFailsignup(req, res) {
 function getLogout(req, res) {
     req.logout((err) => {
         if (err) { return next(err); }
-        res.sendFile(__dirname + '/public/views/index.html');
+        res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
     });
 }
 

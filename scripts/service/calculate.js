@@ -1,18 +1,3 @@
-/*function randomNumbers (tries) {
-    let inventory = {}
-    
-    for (let i = 1; i <= parseInt(tries); i++ ) {
-        const randomNum = Math.floor(Math.random() * 1001);
-        if (inventory.hasOwnProperty(randomNum)) {
-            inventory[randomNum]++;
-        } else {
-            inventory[randomNum] = 1;
-        }
-    }
-
-    return inventory
-}*/
-
 
 const getOneRandom = () => Math.ceil(Math.random() * 1000);
 

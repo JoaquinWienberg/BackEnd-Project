@@ -1,4 +1,5 @@
 import {promises as fs} from "fs"
+import logger from "../../service/logger.js"
 
 class SystemChat {
     constructor(data) {
@@ -23,10 +24,10 @@ class SystemChat {
     async getAll(){
         try {
             const msgs = await fs.readFile(this.data, "utf-8");
-            console.log("Messages were successfuly obtained")
+            logger.info("Messages were successfuly obtained")
             return JSON.parse(msgs)
           } catch (error){
-            console.log("Error when reading messages")
+            logger.error("Error when reading messages")
             return [];
           }
     }
