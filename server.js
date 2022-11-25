@@ -13,6 +13,9 @@ import routes from "./scripts/service/routes.js"
 import dotenv from "dotenv"
 import logger from "./scripts/service/logger.js"
 import app from "./scripts/rout/app.js"
+import checkAuthentication from "./scripts/middlewares/authenticate.js"
+import home from "./scripts/controllers/home.js"
+import sessionInfo from "./scripts/config/session.js";
 
 faker.locale = "es"
 const mongoDB = config.mongodb
@@ -35,7 +38,6 @@ routerProducts.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-
 // HandleBars
 
 app.engine(
@@ -50,18 +52,7 @@ app.engine(
 
 // MONGO LOGIN
 
-const credentials = process.env.MONGODB
-
-app.use(session({
-    store: MongoStore.create({ mongoUrl: credentials,
-                                mongoOptions: mongoDB.options}),
-    secret: "secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 600000
-    }
-}))
+app.use(sessionInfo)
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -81,25 +72,9 @@ app.post('/signup', passport.authenticate('signup', {
 }), routes.postSignup);
 app.get('/failsignup', routes.getFailsignup);
 
-//Last part
-function checkAuthentication(req, res, next) {
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}
+//HOME
 
-app.get('/home', checkAuthentication, (req, res) => {
-    const { user } = req;
-    console.log(user);
-    const nombre = req.session.user
-    if (req.session.user) {
-        res.render('index', {nombre: nombre});
-    } else {
-        res.redirect('/login');
-    }
-});
+app.get('/home', checkAuthentication, home);
 
 // app setting
 app.set("view engine", "hbs");
