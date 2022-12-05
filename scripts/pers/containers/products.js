@@ -1,6 +1,8 @@
 import faker from "faker";
 faker.locale = 'es';
 
+
+
 function createProduct() {
   return {
       title: faker.commerce.product(),
@@ -9,15 +11,16 @@ function createProduct() {
   }
 };
 
-//const { promises: fs } = require("fs")
-
 import knex from "knex"
 
 class contenedor {
     constructor(config, table) {
       this.knex = knex(config)
       this.table = table
+      this.value = Math.random(100)
     }
+
+
 
     // Adds new product
 
@@ -120,6 +123,8 @@ class contenedor {
       }
       return displayNew
   }
+
+
 
 } 
 

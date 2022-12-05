@@ -1,16 +1,17 @@
 // Express setup
-import express from "express"
-import contenedor from "../pers/containers/products.js"
-import config from "../pers/config.js"
+import { productsDao } from "../pers/DAOS/factory.js"
+import { asDto } from "../pers/DTO/productDto.js"
 
 // Stock class
-const Contenedor = contenedor
-const stock = new Contenedor(config.mariaDb, "products")
 
-// Router
+const stock = productsDao
+
+// Data functions
 
 const getData = async () => {
     const data = await stock.getAll()
+    const data2 = stock.getInstance()
+    console.log(data2)
     return data
 }
 
@@ -31,7 +32,7 @@ const saveData = async (title, price, thumbnail, time, desc, inv, code) => {
 
 const updateDataById = async (id, title, price, thumbnail, time, desc, inv, code ) => {
     const data = await stock.updateById(id, title, price, thumbnail, time, desc, inv, code)
-    return data
+    return asDto(data)
 }
 
 

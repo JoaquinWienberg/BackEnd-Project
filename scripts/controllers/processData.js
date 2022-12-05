@@ -1,7 +1,7 @@
 // Express setup
 import express from "express"
 import contenedor from "../pers/containers/products.js"
-import adminsCheck from "../service/admin.js"
+import adminsCheck from "../middlewares/admin.js"
 import { getData as getDataDB, getDataById as getDataByIDDB, saveData as saveDataDB, updateDataById as updateDataByIDDB, deleteI as deleteDataByIdDB } from "../service/data.js"
 import config from "../pers/config.js"
 import path from "path";

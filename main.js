@@ -16,6 +16,7 @@ import minimist from "minimist"
 import cluster from "cluster"
 import os from "os"
 import logger from "./scripts/service/logger.js"
+import { getChat, displayNormalizedChat } from "./scripts/config/normalizr.js"
 
 
 // chat class
@@ -23,29 +24,6 @@ const Contenedor = contenedor
 //const sysChat = new Contenedor(config.sqlite3, "messages")
 const sysChat = new SystemChat("./txt/chats.txt")
 const stock = new Contenedor(config.mariaDb, "products")
-
-// NORMALIZR
-async function getChat () {
-    const data = await sysChat.getAll()
-    return data
-}
-const testChats = getChat()
-
-// SCHEMAS
-    
-const authorSchema = new schema.Entity('author', {}, {idAttribute: 'email'});
-const textSchema = new schema.Entity('texts', {author: authorSchema}, {idAttribute: 'id'}) ;
-const chatLogSchema = new schema.Entity('Chat',
-        { messages: [textSchema]}, {idAttribute: 'id'});
-
-const normalizeChat = (data) => normalize(data, chatLogSchema)
-
-async function displayNormalizedChat() {
-    const messages = await sysChat.getAll();
-    const normalizedItem = normalizeChat({ id: 'messages', messages });
-    console.log(util.inspect(normalizedItem, false, 12, true));
-    return normalizedItem
-}
 
 // Websocket
 

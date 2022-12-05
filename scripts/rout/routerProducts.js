@@ -1,6 +1,6 @@
 // Express setup
 import express from "express"
-import adminsCheck from "../service/admin.js"
+import adminsCheck from "../middlewares/admin.js"
 import { getStock, getStockById, createStock, updateStock, deleteStock} from "../controllers/processData.js"
 
 const { Router } = express;
