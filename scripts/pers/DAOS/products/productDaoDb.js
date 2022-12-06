@@ -1,21 +1,15 @@
 
 import contenedor from "../../containers/products.js"
 import config from "../../../pers/config.js"
+import SingletonClass from "../../containers/singleton.js"
 
-let instance = null
-class ProductsDaoDb extends contenedor {
+
+class ProductsDaoDb extends SingletonClass {
 
     constructor() {
 
             super(config.mariaDb, "products")
 
-    }
-
-    static getInstance() {
-        if(!instance) {
-            instance = new ProductsDaoDb(config.mariaDb, "products");
-        }
-        return instance;
     }
 
 }

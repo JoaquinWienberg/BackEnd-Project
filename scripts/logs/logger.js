@@ -12,8 +12,8 @@ import winston from "winston"
 function buildProdLogger() {
     const prodLogger = winston.createLogger({
         transports: [,
-            new winston.transports.File({ filename: 'warn.log', level: 'warning' }),
-            new winston.transports.File({ filename: 'error.log', level: 'error' }),
+            new winston.transports.File({ filename: './scripts/logs/warn.log', level: 'warning' }),
+            new winston.transports.File({ filename: './scripts/logs/error.log', level: 'error' }),
         ]
     });
     return prodLogger;
@@ -22,8 +22,8 @@ function buildProdLogger() {
 function buildDevLogger() {
     const devLogger = winston.createLogger({
         transports: [
-            new winston.transports.File({ filename: 'warn.log', level: 'warning' }),
-            new winston.transports.File({ filename: 'error.log', level: 'error' }),
+            new winston.transports.File({ filename: './scripts/logs/warn.log', level: 'warning' }),
+            new winston.transports.File({ filename: './scripts/logs/error.log', level: 'error' }),
             new winston.transports.Console({ level: 'info' }),
             new winston.transports.Console({ level: 'warning' }),
             new winston.transports.Console({ level: 'error' })

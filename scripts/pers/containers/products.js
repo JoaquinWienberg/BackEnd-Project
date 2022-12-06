@@ -1,7 +1,7 @@
 import faker from "faker";
 faker.locale = 'es';
 
-
+let instance = null
 
 function createProduct() {
   return {
@@ -123,7 +123,6 @@ class contenedor {
       }
       return displayNew
   }
-
 
 
 } 

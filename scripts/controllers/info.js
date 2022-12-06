@@ -1,4 +1,4 @@
-import logger from "../service/logger.js"
+import logger from "../logs/logger.js"
 
 const info = async (req, res) => {
     logger.info("Ingreso a info exitoso!")

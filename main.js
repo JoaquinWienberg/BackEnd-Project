@@ -10,13 +10,13 @@ import normalizr from 'normalizr';
 const normalize = normalizr.normalize;
 const denormalize = normalizr.denormalize;
 const schema = normalizr.schema;
-import util from "util";
 import dbConnect from "./scripts/pers/controllersdb.js"
 import minimist from "minimist"
 import cluster from "cluster"
 import os from "os"
-import logger from "./scripts/service/logger.js"
-import { getChat, displayNormalizedChat } from "./scripts/config/normalizr.js"
+import logger from "./scripts/logs/logger.js"
+import { displayNormalizedChat } from "./scripts/config/normalizr.js"
+
 
 
 // chat class
