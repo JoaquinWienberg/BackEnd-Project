@@ -6,7 +6,7 @@ import { asDto } from "../pers/DTO/productDto.js"
 
 const stock = productsDao
 
-// Data functions
+// Data Repository functions
 
 const getData = async () => {
     const data = await stock.getAll()
