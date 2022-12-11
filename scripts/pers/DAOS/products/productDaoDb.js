@@ -4,7 +4,7 @@ import config from "../../../pers/config.js"
 import SingletonClass from "../../containers/singleton.js"
 
 
-class ProductsDaoDb extends SingletonClass {
+class ProductsDaoDb extends contenedor {
 
     constructor() {
 

@@ -10,14 +10,12 @@ const stock = productsDao
 
 const getData = async () => {
     const data = await stock.getAll()
-    const data2 = stock.getInstance()
-    console.log(data2)
-    return data
+    return asDto(data)
 }
 
-const getDataById = async () => {
-    const data = await stock.getById()
-    return data
+const getDataById = async (id) => {
+    const data = await stock.getById(id)
+    return asDto(data)
 }
 
 const deleteI = async (id) => {
@@ -32,7 +30,7 @@ const saveData = async (title, price, thumbnail, time, desc, inv, code) => {
 
 const updateDataById = async (id, title, price, thumbnail, time, desc, inv, code ) => {
     const data = await stock.updateById(id, title, price, thumbnail, time, desc, inv, code)
-    return asDto(data)
+    return data
 }
 
 

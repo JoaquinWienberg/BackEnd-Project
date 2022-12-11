@@ -33,8 +33,6 @@ dotenv.config({
 
 // Router
 
-routerProducts.use(express.json())
-routerProducts.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
