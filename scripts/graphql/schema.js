@@ -22,13 +22,13 @@ const ProductSchema = buildSchema(`
   }
   type Query {
     getData: [Product],
-    getDataById (id: ID!): Product,
+    returnProductById (id: ID!): [Product],
   }
 
   type Mutation {
-    saveData (data: ProductInput): Product, 
-    updateDataById (id: ID!): Product, 
-    deleteI (id: ID!): Product,
+    saveProduct (title: String, price: Int, thumbnail: String, timestamp: String, desc: String, stock: Int, code: String): Product, 
+    updateProduct (id: ID!, title: String, price: Int, thumbnail: String, timestamp: String, desc: String, stock: Int, code: String): Product, 
+    deleteProductById (id: ID!): Product,
   }
 `);
 

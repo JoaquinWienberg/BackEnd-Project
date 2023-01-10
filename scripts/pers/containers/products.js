@@ -25,8 +25,6 @@ class contenedor {
     // Adds new product
 
     async save(title, price, thumbnail, time, desc, stock, code) {
-      const testgraph = {a:title, b:price, c:thumbnail, d:time, e:desc, f:stock, e:code}
-      console.log(testgraph)
       try {
         await this.knex(this.table).insert({title: title, price: parseInt(price), thumbnail: thumbnail, timestamp: time, desc: desc, stock: parseInt(stock), code: code})
         console.log(`New product added`)

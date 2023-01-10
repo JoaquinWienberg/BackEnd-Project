@@ -16,7 +16,8 @@ import app from "./scripts/rout/app.js"
 import checkAuthentication from "./scripts/middlewares/authenticate.js"
 import home from "./scripts/controllers/home.js"
 import sessionInfo from "./scripts/config/session.js";
-import { getData, getDataById, saveData, updateDataById, deleteI } from "./scripts/service/repositoryData.js"
+import { returnProductById, saveProduct, updateProduct, deleteProductById } from "./scripts/graphql/resolvers.js"
+import { getData } from "./scripts/service/repositoryData.js";
 import { graphqlHTTP } from 'express-graphql';
 import ProductSchema from "./scripts/graphql/schema.js";
 
@@ -71,11 +72,12 @@ app.get('/logout', routes.getLogout);
 app.use('/api/graphql', graphqlHTTP({
     schema: ProductSchema,
     rootValue: {
-        getData, 
-        getDataById, 
-        saveData, 
-        updateDataById, 
-        deleteI
+        //returnProducts,
+        getData,
+        returnProductById,
+        saveProduct,
+        updateProduct,
+        deleteProductById
     },
     graphiql: true,
 }));
