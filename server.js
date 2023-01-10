@@ -16,6 +16,9 @@ import app from "./scripts/rout/app.js"
 import checkAuthentication from "./scripts/middlewares/authenticate.js"
 import home from "./scripts/controllers/home.js"
 import sessionInfo from "./scripts/config/session.js";
+import { getData, getDataById, saveData, updateDataById, deleteI } from "./scripts/service/repositoryData.js"
+import { graphqlHTTP } from 'express-graphql';
+import ProductSchema from "./scripts/graphql/schema.js";
 
 faker.locale = "es"
 const mongoDB = config.mongodb
@@ -62,6 +65,21 @@ app.post('/login', passport.authenticate('login', {
 app.get('/faillogin', routes.getFailLogin);
 
 app.get('/logout', routes.getLogout);
+
+// GRAPHQL route
+
+app.use('/api/graphql', graphqlHTTP({
+    schema: ProductSchema,
+    rootValue: {
+        getData, 
+        getDataById, 
+        saveData, 
+        updateDataById, 
+        deleteI
+    },
+    graphiql: true,
+}));
+
 
 //SIGNUP
 app.get('/signup', routes.getSignUp);
