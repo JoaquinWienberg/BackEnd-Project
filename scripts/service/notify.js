@@ -12,15 +12,13 @@ dotenv.config({
     path: path.resolve(path.join(__dirname, "../.env"))
 })
 
-
-const admMail = "caesar.brakus@ethereal.email";
 const admMail2= "joaquinwienberg@gmail.com"
 
 const transporter = createTransport({
     service: 'gmail',
     port: 587,
     auth: {
-        user: admMail2,
+        user: process.env.admMail,
         pass: process.env.adm2
     }
 })

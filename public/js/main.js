@@ -23,7 +23,7 @@ function addNewProduct(e) {
 const stockDatabase = {
 
     get: () => {
-        return fetch('/api/productos')
+        return fetch('/api/products')
             .then(data => data.json())
     },
     post: (newProd) => {
@@ -34,7 +34,7 @@ const stockDatabase = {
             },
             body: JSON.stringify(newProd)
         }
-        return fetch('/api/productos', options)
+        return fetch('/api/products', options)
     },
     put: (idProd, newProd) => {
         const options = {
@@ -44,13 +44,13 @@ const stockDatabase = {
                 'Content-Type': 'application/json',
             }
         }
-        return fetch(`/api/productos/${idProd}`, options)
+        return fetch(`/api/products/${idProd}`, options)
     },
     delete: (idProd) => {
         const options = {
             method: 'DELETE'
         }
-        return fetch(`/api/productos/${idProd}`, options)
+        return fetch(`/api/products/${idProd}`, options)
     }
 }
 

@@ -1,9 +1,25 @@
 import path from "path";
 import url from 'url';
 import { fileURLToPath } from 'url';
+import logger from "../logs/logger.js";
+import dotenv from "dotenv"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({
+    path: path.resolve(path.join(__dirname, "../../.env"))
+})
+
+const mode = process.env.mode
+
+let modeShow
+
+if (mode == "DEV") {
+    modeShow = "Development"
+} else {
+    modeShow = "Production"
+}
 
 
 function getRoot(req, res) {
@@ -21,39 +37,37 @@ function getLogin(req, res) {
             email: user.email,
             phone: user.phone,
             photo: user.photo,
+            mode: modeShow
         });
     }
     else {
-        console.log(__dirname)
-        res.sendFile(__dirname + '/public/views/login.html');
+        res.sendFile(path.join(__dirname + '../../../public/views/login.html'));
     }
 }
 
 function getSignUp(req, res) {
-    res.sendFile(__dirname + '/public/views/signup.html');
+    res.sendFile(path.join(__dirname + '../../../public/views/signup.html'));
 }
 
 
 function postLogin(req, res) {
     const user = req.user;
-    console.log(user);
-    res.sendFile(__dirname + '/public/views/index.html');
+    res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
 }
 
 function postSignup(req, res) {
     const user = req.user;
-    console.log(user);
-    res.sendFile(__dirname + '/public/views/index.html');
+    res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
 }
 
 function getFailLogin(req, res) {
-    console.log('Error when logging in!');
+    logger.warn('Error when logging in!');
     res.render('login-error', {
     });
 }
 
 function getFailsignup(req, res) {
-    console.log('Sign up error!');
+    logger.warn('Sign up error!');
     res.render('signup-error', {
     });
 }
@@ -62,7 +76,7 @@ function getFailsignup(req, res) {
 function getLogout(req, res) {
     req.logout((err) => {
         if (err) { return next(err); }
-        res.sendFile(__dirname + '/public/views/index.html');
+        res.sendFile(path.join(__dirname + '../../../public/views/index.html'));
     });
 }
 

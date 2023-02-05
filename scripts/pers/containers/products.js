@@ -1,6 +1,6 @@
 import faker from "faker";
 faker.locale = 'es';
-import logger from "../scripts/logger.js"
+import logger from "../../logs/logger.js"
 
 function createProduct() {
   return {

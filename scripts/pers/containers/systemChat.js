@@ -1,5 +1,5 @@
 import {promises as fs} from "fs"
-import logger from "../scripts/logger.js"
+import logger from "../../logs/logger.js"
 
 class SystemChat {
     constructor(data) {

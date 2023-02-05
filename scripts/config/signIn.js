@@ -1,8 +1,8 @@
-import User from "../models.js"
-import mailNotification from "../notify.js"
+import User from "../service/models.js"
 import bCrypt from "bcrypt"
 import passport from "passport"
 import passportlocal from 'passport-local';
+import mailNotification from "../service/notify.js";
 
 const LocalStrategy = passportlocal.Strategy;
 
@@ -37,9 +37,7 @@ passport.use("signup", new LocalStrategy({
                     return done(err);
                 }
 
-                let mailBody = `<div><h4>Client: ${newUser.firstName} ${newUser.lastName}</h4><h4>Client email: ${email}</h4></div>`
-
-                mailNotification("New user created - Node.js", "A new user has been created!", mailBody )
+                mailNotification("New user created", "User created", newUser.email)
 
                 return done(null, userWithid);
             })

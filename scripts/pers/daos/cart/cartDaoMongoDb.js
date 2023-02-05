@@ -1,5 +1,5 @@
 
-import ContainerMongoDb from "../../../../containers/mongoContainer.js"
+import ContainerMongoDb from "../../containers/mongoContainer.js"
 
 class CartsDaoMongoDb extends ContainerMongoDb {
 
@@ -7,7 +7,8 @@ class CartsDaoMongoDb extends ContainerMongoDb {
         super('carts', {
             products: { type: Array, required: true },
             timestamp: { type: String, required: true },
-            user: { type: String, required: true },
+            email: { type: String, required: true },
+            location: { type: String, required: true },
         })
     }
 }

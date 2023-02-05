@@ -5,7 +5,7 @@
 const stockDatabase = {
 
     get: () => {
-        return fetch('/api/productos')
+        return fetch('/api/products')
             .then(data => data.json())
     },
     post: (newProd) => {

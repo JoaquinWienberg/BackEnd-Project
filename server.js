@@ -1,30 +1,24 @@
 // Express setup
 import express from "express"
 import handlebars from "express-handlebars"
-import contenedor from "./containers/products.js"
-import config from "./scripts/config.js"
+import contenedor from "./scripts/pers/containers/products.js"
+import config from "./scripts/config/config.js"
 import path from "path";
 import { fileURLToPath } from 'url';
-import routerProducts from "./scripts/routerProducts.js"
+import routerProducts from "./scripts/rout/routerProducts.js"
 import faker from "faker";
 import session from "express-session"
-import passport from "./scripts/authentication/signIn.js"
-import MongoStore from "connect-mongo"
-import routes from "./routes.js"
+import passport from "./scripts/config/signIn.js"
+import routes from "./scripts/service/routes.js"
 import dotenv from "dotenv"
-import logger from "./scripts/logger.js"
+import logger from "./scripts/logs/logger.js"
 import multer from "multer"
+import sessionInfo from "./scripts/config/session.js";
+import checkAuthentication from "./scripts/middlewares/authenticate.js"
+import home from "./scripts/controllers/home.js";
 
-faker.locale = "es"
-const mongoDB = config.mongodb
 
-const { Router } = express;
 const app = express();
-
-// Stock class
-const Contenedor = contenedor
-const stock = new Contenedor(config.mariaDb, "products")
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -39,7 +33,7 @@ dotenv.config({
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-// Multer setup
+// MULTER
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -67,18 +61,7 @@ app.engine(
 
 // MONGO LOGIN
 
-const credentials = process.env.MONGODB
-
-app.use(session({
-    store: MongoStore.create({ mongoUrl: credentials,
-                                mongoOptions: mongoDB.options}),
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 600000
-    }
-}))
+app.use(sessionInfo)
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -90,7 +73,7 @@ app.post('/login', passport.authenticate('login', {
 app.get('/faillogin', routes.getFailLogin);
 app.get('/logout', routes.getLogout);
 
-//SIGNUP
+// SIGNUP
 app.get('/signup', routes.getSignUp);
 app.post('/signup', upload.single("upload"),
     passport.authenticate('signup', {
@@ -98,30 +81,15 @@ app.post('/signup', upload.single("upload"),
 }), routes.postSignup);
 app.get('/failsignup', routes.getFailsignup);
 
-//Last part
-function checkAuthentication(req, res, next) {
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-}
+// HOME WEB
 
-app.get('/home', checkAuthentication, (req, res) => {
-    const { user } = req;
-    const nombre = req.session.user
-    if (req.session.user) {
-        res.render('index', {nombre: nombre, photo: req.body.photo});
-    } else {
-        res.redirect('/login');
-    }
-});
+app.get('/home', checkAuthentication, home);
 
-// app setting
+// APP SETTING
 app.set("view engine", "hbs");
 app.set("views", "./public/views");
 
-// Route setting
+// PATHS SETTING
 
 app.use('/api', routerProducts)
 app.use(express.static('public'));
