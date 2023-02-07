@@ -4,10 +4,6 @@ import { Server as Socket} from "socket.io"
 import config from "./scripts/config/config.js"
 const httpServer = new HttpServer(app)
 const io = new Socket(httpServer)
-import normalizr from 'normalizr';
-const normalize = normalizr.normalize;
-const denormalize = normalizr.denormalize;
-const schema = normalizr.schema;
 import dbConnect from "./scripts/pers/controllersdb.js"
 import minimist from "minimist"
 import cluster from "cluster"

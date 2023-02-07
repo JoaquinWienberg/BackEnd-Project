@@ -4,7 +4,6 @@ import { asDto } from "../pers/DTO/productDto.js"
 // Stock class
 
 const stock = productsDaoMongo
-const carts = cartDaoMongo
 
 // Data Repository functions
 

@@ -20,7 +20,7 @@ dotenv.config({
 const sessionInfo = session({
     store: MongoStore.create({ mongoUrl: process.env.MONGODB,
                                 mongoOptions: config.mongodb.options}),
-    secret: process.env.secret,
+    secret: "secret",
     resave: false,
     saveUninitialized: false,
     cookie: {

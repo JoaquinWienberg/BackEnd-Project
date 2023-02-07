@@ -1,13 +1,9 @@
 // Express setup
 import express from "express"
 import handlebars from "express-handlebars"
-import contenedor from "./scripts/pers/containers/products.js"
-import config from "./scripts/config/config.js"
 import path from "path";
 import { fileURLToPath } from 'url';
 import routerProducts from "./scripts/rout/routerProducts.js"
-import faker from "faker";
-import session from "express-session"
 import passport from "./scripts/config/signIn.js"
 import routes from "./scripts/service/routes.js"
 import dotenv from "dotenv"

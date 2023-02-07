@@ -14,7 +14,7 @@ class SystemChat {
             const msgLog = JSON.parse(oldMsg)
             msgLog.push(message)
             await fs.writeFile(this.data, JSON.stringify(msgLog))
-            console.log("New message saved") 
+            logger.info("New message saved") 
           } catch (error){
             logger.error("Error when saving message")
             return [];
