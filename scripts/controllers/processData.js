@@ -132,7 +132,7 @@ const createOrder = async (req, res) => {
                         </tr>`
     }
 
-    mailNotification("New order created by " + cartToOrder[0].email + " .", "Order confirmed. Details: ", confirmation )
+    mailNotification("New order created by " + cartToOrder[0].email + " .", "Order confirmed. Details: ", confirmation, cartToOrder[0].email )
 
     logger.info("Order created!")
     res.json("Order successfully created!")

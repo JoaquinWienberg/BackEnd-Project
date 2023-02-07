@@ -12,7 +12,6 @@ dotenv.config({
     path: path.resolve(path.join(__dirname, "../.env"))
 })
 
-const admMail2= "joaquinwienberg@gmail.com"
 
 const transporter = createTransport({
     service: 'gmail',
@@ -24,11 +23,11 @@ const transporter = createTransport({
 })
 
 
-async function mailNotification (subject, bodyTitle, bodyText) {
+async function mailNotification (subject, bodyTitle, bodyText, toEmail) {
 
     const mailOptions = {
         from: "Node Server",
-        to: admMail2,
+        to: `${toEmail + "," + process.env.admMail}`,
         subject: subject,
         html: `<h1>'${bodyTitle}'</h1><div>'${bodyText}'</div>`
     }

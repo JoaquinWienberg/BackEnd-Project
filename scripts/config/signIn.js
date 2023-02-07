@@ -37,7 +37,7 @@ passport.use("signup", new LocalStrategy({
                     return done(err);
                 }
 
-                mailNotification("New user created", "User created", newUser.email)
+                mailNotification("New user created", "User created", newUser.email, newUser.email)
 
                 return done(null, userWithid);
             })
