@@ -46,8 +46,6 @@ routerProducts.delete("/cart/:code", adminsCheck, deleteCart)
 
 routerProducts.delete("/cart", adminsCheck, deleteAllCarts)
 
-routerProducts.post("/cart", adminsCheck, createCart)
-
 // ORDER PATHS
 
 routerProducts.get("/order", getOrders)

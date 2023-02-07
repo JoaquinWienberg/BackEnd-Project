@@ -156,7 +156,7 @@ const createMessage = async (req, res) => {
     const validMessage = { email: newMessage.email, type: "User", timestamp: newMessage.time, message: newMessage.message};
     await chatsMongo.saveMessage(validMessage)
     logger.info("Message sent!")
-    res.json(validProd)
+    res.json("Message sent!")
 }
 
 export { getStock, getStockById, createStock, updateStock, deleteStock, getStockByCategory, createCart, getCarts, getCartById, updateCartById, deleteProductFromCart, deleteCart, deleteAllCarts, getOrders, createOrder, getChats, getChatsFromUser, createMessage}
